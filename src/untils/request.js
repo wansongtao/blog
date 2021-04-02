@@ -1,7 +1,5 @@
 import axios from 'axios'
-import {
-    Message
-} from 'element-ui'
+import { ElMessage } from 'element-plus'
 
 const service = axios.create({
     baseURL: process.env.VUE_APP_BASE_API,
@@ -21,7 +19,7 @@ service.interceptors.response.use((response) => {
             return data
         }
 
-        Message({
+        ElMessage({
             message: message || '操作失败',
             type: 'error',
             duration: 2 * 1000
@@ -30,7 +28,7 @@ service.interceptors.response.use((response) => {
     (error) => {
         console.error('err' + error)
 
-        Message({
+        ElMessage({
             message: error.message,
             type: 'error',
             duration: 2 * 1000
