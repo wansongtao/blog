@@ -6,12 +6,14 @@ const routes = [
   {
     path: '/',
     name: 'Index',
-    component: Index
+    component: Index,
+    meta: { title: '首页' }
   },
   {
     path: '/blog',
     name: 'Main',
     component: Layout,
+    redirect: '/blog/article',
     children: [
       {
         path: 'article',
@@ -38,6 +40,13 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
+})
+
+// eslint-disable-next-line no-unused-vars
+router.beforeEach((to, from) => {
+  document.title = to.meta.title || '欢迎来的万松涛的个人博客'
+
+  return true
 })
 
 export default router
