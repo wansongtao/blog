@@ -19,26 +19,29 @@ const routes = [
         path: 'article',
         name: 'Article',
         component: () => import('@/views/article.vue'),
-        meta: { title: '文章' }
+        meta: { title: '文章' },
+        hidden: false
       },
       {
         path: 'message',
         name: 'Message',
         component: () => import('@/views/message.vue'),
-        meta: { title: '留言' }
+        meta: { title: '留言' },
+        hidden: false
       },
       {
         path: 'about',
         name: 'About',
         component: () => import('@/views/about.vue'),
-        meta: { title: '关于我' }
+        meta: { title: '关于我' },
+        hidden: false
       }
     ]
   }
 ]
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHistory(),
   routes
 })
 
