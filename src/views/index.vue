@@ -2,9 +2,9 @@
   <div class="container">
     <div class="focus">
       <div class="animate-content">
-        <div class="name">万松涛</div>
-        <div class="des">失败并不可怕，害怕失败才真正可怕。</div>
-        <el-button type="primary">Enter Blog</el-button>
+        <div class="name">{{name}}</div>
+        <div class="des">{{lifeMotto}}</div>
+        <el-button type="primary" @click="jumpBlog">Enter Blog</el-button>
       </div>
     </div>
     <div class="article">
@@ -46,55 +46,76 @@
     <footer class="footer">
       <div class="ft-content">
           <div class="ft-content-item">
-              <h6>万松涛</h6>
-              <p>失败并不可怕，害怕失败才真正可怕</p>
-              <el-button type="primary">Enter Blog</el-button>
+              <h6>{{name}}</h6>
+              <p>{{lifeMotto}}</p>
+              <el-button type="primary" @click="jumpBlog">Enter Blog</el-button>
           </div>
           <div class="ft-content-item">
               <h6>相关链接</h6>
               <div class="ft-link">
-                  <div>博客</div>
-                  <div>博客</div>
-                  <div>博客</div>
+                  <div v-for="(item, index) in menuList" :key="index">
+                    <router-link :to="item.path" >{{item.title}}</router-link>
+                  </div>
               </div>
           </div>
           <div class="ft-content-item">
               <h6>联系我</h6>
-              <div class="about-me">weChat：SpaceX0529</div>
-              <div class="about-me">QQ: 2294215581</div>
-              <div class="about-me">email: 2294215581@qq.com</div>
+              <div class="about-me">weChat：{{weChat}}</div>
+              <div class="about-me">QQ: {{qqAcc}}</div>
+              <div class="about-me">email: {{email}}</div>
           </div>
       </div>
-      <div class="beian">
-        <a
-          target="_blank"
-          href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44060502002532"
-          style="
-            display: inline-block;
-            text-decoration: none;
-            height: 20px;
-            line-height: 20px;
-          "
-          ><img src="@/assets/images/beian.png" style="float: left" />
-          <p
-            style="
-              float: left;
-              height: 20px;
-              line-height: 20px;
-              margin: 0px 0px 0px 5px;
-              color: #939393;
-            "
-          >
-            粤公网安备 44060502002532号
-          </p>
-        </a>
-      </div>
+      <BeiAn />
     </footer>
   </div>
 </template>
 
 <script>
-export default {};
+import {defineComponent, toRefs, reactive } from 'vue'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+import BeiAn from '@/components/footerBeiAn.vue'
+import menu from '@/hooks/menu.js'
+
+export default defineComponent({
+  components: {
+    BeiAn,
+  },
+  setup() {
+    const user = reactive({
+      name: '',
+      lifeMotto: '',
+      weChat: '',
+      qqAcc: '',
+      email: ''
+    })
+
+    // 调用vuex获取用户信息
+    const store = useStore()
+
+    store.dispatch('getUserInfo').then((data) => {
+      user.name = data.name
+      user.lifeMotto = data.lifeMotto
+      user.weChat = data.weChat
+      user.qqAcc = data.qqAcc
+      user.email = data.email
+    })
+
+    // 获取菜单列表
+    const menuList = menu()
+
+    const router = useRouter()
+    function jumpBlog() {
+      router.push('/blog/article')
+    }
+
+    return {
+      ...toRefs(user),
+      menuList,
+      jumpBlog
+    }
+  }
+})
 </script>
 
 <style lang="scss" scoped>
@@ -229,14 +250,6 @@ export default {};
     padding: 30px 5%;
     width: 90%;
   }
-
-  .beian {
-    width: 100%;
-    padding: 10px 0;
-    background: #1d1d21;
-    text-align: center;
-    font-size: 16px;
-  }
 }
 
 .ft-content-item {
@@ -268,10 +281,15 @@ export default {};
         width: 50%;
         font-size: 14px;
         color: #fff;
-        cursor: pointer;
 
-        &:hover {
-            color: #82b440;
+        ::v-deep a {
+          display: block;
+          text-decoration: none;
+          color: #fff;
+        }
+
+        ::v-deep a:hover {
+          color: #82b440;
         }
     }
 }
