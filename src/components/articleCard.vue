@@ -3,7 +3,12 @@
     <div class="list-img">
       <img src="@/assets/images/new1.jpg" alt="封面" />
     </div>
-    <h6>{{ article.articleTitle || "" }}</h6>
+    <div class="title">
+      <div class="main-title">
+        <p>{{ article.articleTitle || "" }}</p>
+      </div>
+      <div class="hot"><i class="iconfont iconhot1"></i>{{ article.hot || 0 }}</div>
+    </div>
     <p class="author">{{ article.author || "" }}</p>
     <p class="date">{{ chinaDate || "" }}</p>
     <span>+阅读更多</span>
@@ -25,23 +30,23 @@ export default defineComponent({
 
     // 使用计算属性处理日期
     const chinaDate = computed(() => {
-        const dateArr = addTime.value.replace(/-/g, '/').substr(0, 10).split('/');
+      const dateArr = addTime.value.replace(/-/g, "/").substr(0, 10).split("/");
 
-        return `${dateArr[0]}年${dateArr[1]}月${dateArr[2]}日`;
+      return `${dateArr[0]}年${dateArr[1]}月${dateArr[2]}日`;
     });
 
     /**
      * @description 跳转到文章详情页
      */
     function articleDetails(articleId) {
-        console.log(articleId);
+      console.log(articleId);
     }
 
     return {
       chinaDate,
-      articleDetails
+      articleDetails,
     };
-  }
+  },
 });
 </script>
 
@@ -76,14 +81,34 @@ export default defineComponent({
     }
   }
 
-  h6 {
+  .title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     padding: 10px;
     font-size: 16px;
     color: #000;
     font-weight: bold;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+
+    p {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .main-title {
+      flex: 1 1 auto;
+    }
+
+    .hot {
+      width: 12%;
+      text-align: right;
+    }
+
+    i {
+      font-size: 20px;
+      color: red;
+    }
   }
 
   .author {
@@ -102,6 +127,7 @@ export default defineComponent({
     padding: 5px 10px;
     font-size: 14px;
     color: #0000ee;
+    text-align: right;
   }
 }
 </style>
