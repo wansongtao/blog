@@ -1,6 +1,6 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import Index from '../views/index.vue'
-import Layout from '@/layout/index.vue'
+import { createRouter, createWebHistory } from 'vue-router';
+import Index from '../views/index.vue';
+import Layout from '@/layout/index.vue';
 
 const routes = [
   {
@@ -38,18 +38,18 @@ const routes = [
       }
     ]
   }
-]
+];
 
 const router = createRouter({
   history: createWebHistory(),
   routes
-})
+});
 
 // eslint-disable-next-line no-unused-vars
 router.beforeEach((to, from) => {
-  document.title = to.meta.title || '欢迎来的万松涛的个人博客'
+  document.title = to.meta.title || '欢迎来的万松涛的个人博客';
 
-  return true
-})
+  return true;
+});
 
-export default router
+export default router;

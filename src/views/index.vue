@@ -11,36 +11,10 @@
       <h4>热门文章</h4>
       <div class="divider"></div>
       <p class="para">
-        很想给你写封信，告诉你这里的天气，昨夜的那场电影，还有我的心情。
+        在这个世界既没有幸福也没有不幸，只是一种处境和另一种处境的比较，仅此而已，唯有经历过最大厄运磨难的人，才能感受到最大的乐趣。
       </p>
-      <div class="art-list">
-        <div class="list-item">
-          <img src="@/assets/images/new1.jpg" alt="封面" />
-          <h6>我没胆量犯错，才把一切错过</h6>
-          <p class="date">2019年12月28日</p>
-          <p class="item-des">
-            “要知道，许多在眼前看来天大的事，都不是人生一战，而只是人生一站。”（七堇年语）
-          </p>
-          <span>+阅读更多</span>
-        </div>
-        <div class="list-item">
-          <img src="@/assets/images/new1.jpg" alt="封面" />
-          <h6>我没胆量犯错，才把一切错过</h6>
-          <p class="date">2019年12月28日</p>
-          <p class="item-des">
-            “要知道，许多在眼前看来天大的事，都不是人生一战，而只是人生一站。”（七堇年语）
-          </p>
-          <span>+阅读更多</span>
-        </div>
-        <div class="list-item">
-          <img src="@/assets/images/new1.jpg" alt="封面" />
-          <h6>我没胆量犯错，才把一切错过</h6>
-          <p class="date">2019年12月28日</p>
-          <p class="item-des">
-            “要知道，许多在眼前看来天大的事，都不是人生一战，而只是人生一站。”（七堇年语）
-          </p>
-          <span>+阅读更多</span>
-        </div>
+      <div class="art-list" v-if="articles.length > 0">
+        <ArticleCard v-for="(item, index) in articles" :key="index" :article="item" />
       </div>
     </div>
     <footer class="footer">
@@ -71,51 +45,60 @@
 </template>
 
 <script>
-import {defineComponent, toRefs, reactive } from 'vue'
-import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
-import BeiAn from '@/components/footerBeiAn.vue'
-import menu from '@/hooks/menu.js'
+import {defineComponent, toRefs, reactive } from 'vue';
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
+import menu from '@/hooks/menu.js';
+import BeiAn from '@/components/footerBeiAn.vue';
+import ArticleCard from '@/components/articleCard.vue';
+import {getHotArticle} from '@/api/article.js';
 
 export default defineComponent({
   components: {
     BeiAn,
+    ArticleCard
   },
   setup() {
-    const user = reactive({
+    const state = reactive({
       name: '',
       lifeMotto: '',
       weChat: '',
       qqAcc: '',
-      email: ''
-    })
+      email: '',
+      articles: []
+    });
 
     // 调用vuex获取用户信息
-    const store = useStore()
+    const store = useStore();
 
     store.dispatch('getUserInfo').then((data) => {
-      user.name = data.name
-      user.lifeMotto = data.lifeMotto
-      user.weChat = data.weChat
-      user.qqAcc = data.qqAcc
-      user.email = data.email
-    })
+      state.name = data.name;
+      state.lifeMotto = data.lifeMotto;
+      state.weChat = data.weChat;
+      state.qqAcc = data.qqAcc;
+      state.email = data.email;
+    });
 
     // 获取菜单列表
-    const menuList = menu()
+    const menuList = menu();
 
-    const router = useRouter()
+    const router = useRouter();
     function jumpBlog() {
-      router.push('/blog/article')
+      router.push('/blog/article');
     }
+
+    // 获取热门文章列表
+    getHotArticle().then((data) => {
+      state.articles = data.articles.slice(0, 3);
+    });
 
     return {
-      ...toRefs(user),
+      ...toRefs(state),
       menuList,
       jumpBlog
-    }
+    };
   }
-})
+});
 </script>
 
 <style lang="scss" scoped>
@@ -188,44 +171,6 @@ export default defineComponent({
       margin: 0 auto;
       padding: 10px 0;
       width: 60%;
-
-      .list-item {
-        width: 32%;
-        background: #faf9f9;
-        text-align: left;
-
-        img {
-          display: block;
-          border: none;
-          width: 100%;
-        }
-
-        h6 {
-          padding: 10px;
-          font-size: 14px;
-          color: #000;
-          font-weight: bold;
-        }
-
-        .date {
-          padding-left: 10px;
-          font-size: 12px;
-        }
-
-        .item-des {
-          padding: 10px;
-          height: 80px;
-          font-size: 14px;
-          color: #888;
-        }
-
-        span {
-          padding: 10px;
-          cursor: pointer;
-          font-size: 14px;
-          color: #0000ee;
-        }
-      }
     }
   }
 }

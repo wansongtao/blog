@@ -1,4 +1,4 @@
-import request from '@/untils/request'
+import request from '@/untils/request';
 
 /**
  * @description 获取用户信息
@@ -8,5 +8,5 @@ export const getUserInfo = () => {
     return request({
         url: '/blog/getuserinfo',
         method: 'get'
-    })
-}
+    });
+};
