@@ -1,13 +1,13 @@
 <template>
   <div class="list-item" @click="articleDetails(article.articleId)">
     <div class="list-img">
-      <img src="@/assets/images/new1.jpg" alt="封面" />
+      <img src="@/assets/images/new1.jpg" alt="封面"/>
     </div>
     <div class="title">
       <div class="main-title">
         <p>{{ article.articleTitle || "" }}</p>
       </div>
-      <div class="hot"><i class="iconfont iconhot1"></i>{{ article.hot || 0 }}</div>
+      <div class="hot"><i class="iconfont iconhot2" />{{ article.hot || 0 }}</div>
     </div>
     <p class="author">{{ article.author || "" }}</p>
     <p class="date">{{ chinaDate || "" }}</p>
@@ -17,6 +17,7 @@
 
 <script>
 import { defineComponent, computed, toRefs } from "vue";
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
   props: {
@@ -35,11 +36,12 @@ export default defineComponent({
       return `${dateArr[0]}年${dateArr[1]}月${dateArr[2]}日`;
     });
 
+    const router = useRouter();
     /**
      * @description 跳转到文章详情页
      */
     function articleDetails(articleId) {
-      console.log(articleId);
+      router.push(`/blog/details/${articleId}`);
     }
 
     return {
@@ -103,10 +105,12 @@ export default defineComponent({
     .hot {
       width: 12%;
       text-align: right;
+      font-weight: 300;
     }
 
     i {
-      font-size: 20px;
+      padding-right: 5px;
+      font-size: 18px;
       color: red;
     }
   }
