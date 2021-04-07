@@ -35,6 +35,14 @@ const routes = [
         component: () => import('@/views/about.vue'),
         meta: { title: '关于我' },
         hidden: false
+      },
+      {
+        path: 'details/:articleId',
+        name: 'Details',
+        component: () => import('@/views/details.vue'),
+        meta: { title: '文章详情' },
+        hidden: true,
+        props: true
       }
     ]
   }
