@@ -60,8 +60,10 @@ export default defineComponent({
   position: fixed;
   top: 0;
   left: 0;
+  z-index: 99;
   width: 100%;
   background: #fff;
+  box-shadow: 0 0 4px 0 rgb(209, 206, 206);
 
   .content {
     display: flex;
