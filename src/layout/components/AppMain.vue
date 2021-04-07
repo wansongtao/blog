@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section class="focus">
     <router-view :key="key" />
   </section>
 </template>
@@ -15,6 +15,8 @@ export default {
 };
 </script>
 
-<style>
-
+<style lang="scss" scoped>
+.focus {
+  flex: 1 1 auto;
+}
 </style>
