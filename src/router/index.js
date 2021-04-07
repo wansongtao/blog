@@ -50,7 +50,11 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
+  // eslint-disable-next-line no-unused-vars
+  scrollBehavior (to, from, savedPosition) {
+    return { top: 0, behavior: 'smooth' };
+  }
 });
 
 // eslint-disable-next-line no-unused-vars
