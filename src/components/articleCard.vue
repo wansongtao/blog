@@ -54,8 +54,9 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .list-item {
+  margin-left: 10px;
   margin-bottom: 10px;
-  width: 33%;
+  width: calc(100% / 3 - 10px);
   background: #faf9f9;
   text-align: left;
   border-radius: 10px;
