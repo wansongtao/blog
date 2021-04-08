@@ -309,6 +309,7 @@ export default {
 
   .article {
     padding: 10px;
+    min-height: calc(100vh - 340px);
     font-size: 18px;
     color: #808080;
 
