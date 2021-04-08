@@ -1,13 +1,339 @@
 <template>
-  <div>details</div>
+  <div class="container">
+    <h6 class="title">我的分享</h6>
+    <div class="content">
+      <h4>{{ articleTitle }}</h4>
+      <article v-html="articleContent" class="article" />
+      <h6 class="title">文章评论</h6>
+      <div class="comment-box">
+        <textarea
+          placeholder="请输入您的评论"
+          maxlength="200"
+          class="textarea"
+        ></textarea>
+      </div>
+      <div class="comment-list">
+        <div class="parent-comment">
+          <img src="@/assets/images/chutian.jpg" alt="avatr" class="avatr" />
+          <div class="main-comment">
+            <p class="comment-time">{{ "2020-11-11" }}</p>
+            <p class="comment-content">失败并不可怕，害怕失败才真正可怕。</p>
+          </div>
+        </div>
+        <div class="child-comment">
+          <p><span>一</span>回复<span>二</span>：失败并不可怕。</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-export default {
+import { reactive, toRefs } from "vue";
+import { getArticleDetail, getArticleComment } from "@/api/article.js";
 
+export default {
+  props: {
+    articleId: {
+      type: String,
+      required: true,
+    },
+    articleTitle: {
+      type: String,
+      required: true,
+    },
+  },
+  setup(props) {
+    const state = reactive({
+      articleContent: "",
+      commentList: [],
+    });
+
+    // 获取文章内容
+    if (sessionStorage.articleDetails) {
+      // 取出会话存储中保存的文章相关数据
+      const article = JSON.parse(sessionStorage.articleDetails);
+
+      // 查找是否有这篇文章且有这篇文章的内容
+      const index = article.findIndex(
+        (item) => item.articleId === props.articleId && item.articleContent
+      );
+
+      if (index !== -1) {
+        // 有，直接赋值
+        state.articleContent = article[index].articleContent;
+      } else {
+        // 没有，从服务器拉取
+        getArticleContent();
+      }
+    } else {
+      getArticleContent();
+    }
+
+    // 从服务器获取文章内容并存入会话存储
+    function getArticleContent() {
+      getArticleDetail(props.articleId).then((data) => {
+        state.articleContent = data.articleContent;
+
+        if (sessionStorage.articleDetails) {
+          // 从会话存储中获取文章相关数据
+          const details = JSON.parse(sessionStorage.articleDetails);
+
+          // 查找是否有这篇文章
+          const index = details.findIndex(
+            (item) => item.articleId === props.articleId
+          );
+
+          if (index !== -1) {
+            // 有，添加文章内容字段
+            details[index].articleContent = data.articleContent;
+          } else {
+            // 没有，添加一个对象包含文章id字段和文章内容字段
+            details.push({
+              articleId: props.articleId,
+              articleContent: data.articleContent,
+            });
+          }
+
+          sessionStorage.articleDetails = JSON.stringify(details);
+        } else {
+          // 会话存储没有任何数据
+          sessionStorage.articleDetails = JSON.stringify([
+            {
+              articleId: props.articleId,
+              articleContent: data.articleContent,
+            },
+          ]);
+        }
+      });
+    }
+
+    // 获取文章评论
+    if (sessionStorage.articleDetails) {
+      // 从会话存储中获取文章数据
+      const article = JSON.parse(sessionStorage.articleDetails);
+
+      // 查找是否有这篇文章且有这篇文章的评论
+      const index = article.findIndex(
+        (item) => item.articleId === props.articleId && item.commentList
+      );
+
+      if (index !== -1) {
+        // 有，直接获取
+        state.commentList = article[index].commentList;
+      } else {
+        getServerComment();
+      }
+    } else {
+      getServerComment();
+    }
+
+    // 从服务器拉取文章评论列表并存入会话存储中。
+    function getServerComment() {
+      getArticleComment(props.articleId).then((data) => {
+        if (!data.commentList) {
+          // 没有评论
+          data.commentList = -1;
+        }
+
+        state.commentList = data.commentList;
+
+        if (sessionStorage.articleDetails) {
+          // 从会话存储中获取文章数据
+          const details = JSON.parse(sessionStorage.articleDetails);
+
+          // 查找是否有这篇文章的数据
+          const index = details.findIndex(
+            (item) => item.articleId === props.articleId
+          );
+
+          if (index !== -1) {
+            // 有，添加文章评论字段
+            details[index].commentList = data.commentList;
+          } else {
+            // 没有，添加一个对象包含文章id和文章评论字段
+            details.push({
+              articleId: props.articleId,
+              commentList: data.commentList,
+            });
+          }
+
+          sessionStorage.articleDetails = JSON.stringify(details);
+        } else {
+          sessionStorage.articleDetails = JSON.stringify([
+            {
+              articleId: props.articleId,
+              commentList: data.commentList,
+            },
+          ]);
+        }
+      });
+    }
+
+    return {
+      ...toRefs(state),
+    };
+  },
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
+.container {
+  padding: 10px 0;
+  min-height: calc(100vh - 110px);
+  background: #fff;
+  animation: main-ani 0.6s linear 0s 1 forwards;
 
+  h4 {
+    text-align: center;
+    font-size: 24px;
+    line-height: 50px;
+    color: #808080;
+  }
+
+  .content {
+    max-height: calc(1286px - 41px);
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      border-radius: 3px;
+      background: rgba(128, 128, 128, 0.2);
+      box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.08);
+    }
+
+    /* 滚动条滑块 */
+    &::-webkit-scrollbar-thumb {
+      border-radius: 3px;
+      background: #5c5b5a;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  .article {
+    padding: 10px;
+    font-size: 18px;
+    color: #808080;
+
+    ::v-deep p {
+      text-indent: 2em;
+      text-align: left;
+      line-height: 2em;
+    }
+
+    ::v-deep img {
+      display: block;
+      margin: 10px auto;
+      max-width: 100%;
+    }
+
+    ::v-deep h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      text-align: center;
+      font-size: 20px;
+      color: #808080;
+      line-height: 1.6em;
+    }
+  }
+
+  .comment-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+
+    .textarea {
+      overflow: hidden;
+      margin: 0 auto;
+      padding: 10px;
+      width: 100%;
+      height: 200px;
+      box-sizing: border-box;
+      resize: none;
+      outline: none;
+      border-radius: 5px;
+      background: #f7f7f7;
+      font-size: 16px;
+      line-height: 1.5em;
+      color: #808080;
+    }
+  }
+}
+
+.title {
+  margin: 0 10px;
+  height: 40px;
+  font-size: 24px;
+  line-height: 40px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+@keyframes main-ani {
+  from {
+    opacity: 0;
+    transform: translateX(-14vw);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.comment-list {
+  margin: 0 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #eee;
+
+  .parent-comment {
+    display: flex;
+  }
+
+  .avatr {
+    display: block;
+    width: 60px;
+    height: 60px;
+    border: none;
+    border-radius: 50%;
+  }
+
+  .main-comment {
+    flex: 1 1 auto;
+
+    p {
+      padding-left: 10px;
+      font-size: 16px;
+      color: #000;
+      line-height: 30px;
+      text-align: left;
+    }
+  }
+
+  .child-comment {
+    margin-left: 70px;
+    margin-bottom: 5px;
+    padding: 10px;
+    background: #f7f7f7;
+    border-radius: 15px;
+
+    p {
+      font-size: 16px;
+      text-align: left;
+      line-height: 1.5em;
+
+      span {
+        padding: 0 5px;
+        color: #409eff;
+      }
+    }
+  }
+}
 </style>
