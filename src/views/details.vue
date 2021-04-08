@@ -12,18 +12,29 @@
           class="textarea"
         ></textarea>
       </div>
-      <div class="comment-list">
-        <div class="parent-comment">
-          <img src="@/assets/images/chutian.jpg" alt="avatr" class="avatr" />
-          <div class="main-comment">
-            <p class="comment-time">{{ "2020-11-11" }}</p>
-            <p class="comment-content">失败并不可怕，害怕失败才真正可怕。</p>
+      <template v-if="commentList !== -1 && commentList.length > 0">
+        <div
+          class="comment-list"
+          v-for="(item, index) in commentList"
+          :key="index"
+        >
+          <div class="parent-comment">
+            <img src="@/assets/images/chutian.jpg" alt="avatr" class="avatr" />
+            <div class="main-comment">
+              <p class="comment-time">{{ item.commentTime }}</p>
+              <p class="comment-content">{{ item.commentContent }}</p>
+            </div>
+          </div>
+          <div class="child-comment" v-if="item.children">
+            <p v-for="(child, idx) in item.children" :key="idx">
+              <span>{{ child.commentId }}</span
+              ><i v-if="child.replyId">回复</i
+              ><span>{{ child.replyId || "" }}</span
+              >：{{ child.commentContent }}
+            </p>
           </div>
         </div>
-        <div class="child-comment">
-          <p><span>一</span>回复<span>二</span>：失败并不可怕。</p>
-        </div>
-      </div>
+      </template>
     </div>
   </div>
 </template>
@@ -295,6 +306,7 @@ export default {
 
   .parent-comment {
     display: flex;
+    margin-bottom: 5px;
   }
 
   .avatr {
