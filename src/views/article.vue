@@ -8,6 +8,9 @@
         :article="item"
       />
     </div>
+    <div class="tempty" v-else>
+      数据为空...
+    </div>
   </div>
 </template>
 
@@ -60,5 +63,12 @@ export default defineComponent({
     align-content: space-between;
     justify-content: flex-start;
   }
+}
+
+.tempty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
 }
 </style>
