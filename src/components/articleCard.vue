@@ -5,7 +5,7 @@
     </div>
     <div class="title">
       <div class="main-title">
-        <p>{{ article.articleTitle || "" }}</p>
+        {{ article.articleTitle || "" }}
       </div>
       <div class="hot"><i class="iconfont iconhot2" />{{ article.hot || 0 }}</div>
     </div>
@@ -92,14 +92,11 @@ export default defineComponent({
     color: #000;
     font-weight: bold;
 
-    p {
+    .main-title {
+      width: 87%;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-    }
-
-    .main-title {
-      flex: 1 1 auto;
     }
 
     .hot {
