@@ -54,7 +54,10 @@ export default defineComponent({
 
 .container {
   padding: 10px;
+  width: 100%;
+  box-sizing: border-box;
   background: #fff;
+  animation: main-ani 0.6s linear 0s 1 forwards;
 
   h6 {
     @extend .title;
@@ -74,5 +77,16 @@ export default defineComponent({
   align-items: center;
   justify-content: center;
   height: 400px;
+}
+
+@keyframes main-ani {
+  from {
+    opacity: 0;
+    transform: translateX(-14vw);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 </style>
