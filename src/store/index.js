@@ -15,6 +15,7 @@ export default createStore({
       return new Promise((resolve) => {
         getUserInfo().then((data) => {
           commit('SETUSERINFO', data);
+          localStorage.user = JSON.stringify(data);
           const { name, lifeMotto, weChat, qqAcc, email } = data;
           resolve({ name, lifeMotto, weChat, qqAcc, email });
         });
