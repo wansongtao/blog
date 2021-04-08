@@ -8,9 +8,7 @@
         :article="item"
       />
     </div>
-    <div class="tempty" v-else>
-      数据为空...
-    </div>
+    <div class="tempty" v-else>数据为空...</div>
   </div>
 </template>
 
@@ -25,17 +23,23 @@ export default defineComponent({
   },
   setup() {
     const state = reactive({
-      newList: []
+      newList: [],
     });
 
-    getNewArticle().then((data) => {
-      state.newList = data.articles.slice(0, 7);
-    });
+    if (!sessionStorage.newArticleList) {
+      getNewArticle().then((data) => {
+        state.newList = data.articles.slice(0, 8);
+
+        sessionStorage.newArticleList = JSON.stringify(data.articles.slice(0, 8));
+      });
+    } else {
+      state.newList = JSON.parse(sessionStorage.newArticleList).slice(0, 8);
+    }
 
     return {
-      ...toRefs(state),
+      ...toRefs(state)
     };
-  }
+  },
 });
 </script>
 
