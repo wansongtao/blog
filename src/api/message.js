@@ -7,7 +7,7 @@ import request from '@/untils/request';
  */
 export const getMessageList = (params) => {
     return request({
-        url: '/blog/getmessage',
+        url: '/api/blog/getmessage',
         method: 'GET',
         params
     });
@@ -20,7 +20,7 @@ export const getMessageList = (params) => {
  */
 export const addMessage = (data) => {
     return request({
-        url: '/blog/addmessage',
+        url: '/api/blog/addmessage',
         method: 'POST',
         data
     });

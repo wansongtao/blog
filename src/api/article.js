@@ -6,7 +6,7 @@ import request from '@/untils/request';
  */
 export const getHotArticle = () => {
     return request({
-        url: '/blog/gethotarticle',
+        url: '/api/blog/gethotarticle',
         method: 'GET'
     });
 };
@@ -17,7 +17,7 @@ export const getHotArticle = () => {
  */
 export const getNewArticle = () => {
     return request({
-        url: '/blog/getnewarticle',
+        url: '/api/blog/getnewarticle',
         method: 'GET'
     });
 };
@@ -28,7 +28,7 @@ export const getNewArticle = () => {
  */
  export const getSearchArticle = (keyword) => {
     return request({
-        url: `/blog/searcharticle?keyword=${keyword}`,
+        url: `/api/blog/searcharticle?keyword=${keyword}`,
         method: 'GET',
     });
 };
@@ -39,7 +39,7 @@ export const getNewArticle = () => {
  */
  export const getArticleDetail = (articleId) => {
     return request({
-        url: `/blog/getarticlecontent?articleId=${articleId}`,
+        url: `/api/blog/getarticlecontent?articleId=${articleId}`,
         method: 'GET',
     });
 };
@@ -50,7 +50,7 @@ export const getNewArticle = () => {
  */
  export const getArticleComment = (articleId) => {
     return request({
-        url: `/blog/getcommentlist?articleId=${articleId}`,
+        url: `/api/blog/getcommentlist?articleId=${articleId}`,
         method: 'GET',
     });
 };
@@ -62,7 +62,7 @@ export const getNewArticle = () => {
  */
 export const addComment = (data) => {
     return request({
-        url: '/blog/addcomment',
+        url: '/api/blog/addcomment',
         method: 'POST',
         data
     });
