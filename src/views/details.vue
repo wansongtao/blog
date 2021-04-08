@@ -7,10 +7,15 @@
       <h6 class="title">文章评论</h6>
       <div class="comment-box">
         <textarea
+          id="comment"
           placeholder="请输入您的评论"
           maxlength="200"
           class="textarea"
+          v-model="commentContent"
         ></textarea>
+        <div class="btn">
+          <el-button type="primary" @click="sendComment" :loading="loading">发表</el-button>
+        </div>
       </div>
       <template v-if="commentList !== -1 && commentList.length > 0">
         <div
@@ -22,11 +27,13 @@
             <img src="@/assets/images/chutian.jpg" alt="avatr" class="avatr" />
             <div class="main-comment">
               <p class="comment-time">{{ item.commentTime }}</p>
-              <p class="comment-content">{{ item.commentContent }}</p>
+              <p class="comment-content" @click="replyComment(item.commentId)">
+                {{ item.commentContent }}
+              </p>
             </div>
           </div>
           <div class="child-comment" v-if="item.children">
-            <p v-for="(child, idx) in item.children" :key="idx">
+            <p v-for="(child, idx) in item.children" :key="idx" @click="replyChildComment(item.commentId, child.commentId)">
               <span>{{ child.commentId }}</span
               ><i v-if="child.replyId">回复</i
               ><span>{{ child.replyId || "" }}</span
@@ -41,7 +48,12 @@
 
 <script>
 import { reactive, toRefs } from "vue";
-import { getArticleDetail, getArticleComment } from "@/api/article.js";
+import { ElMessage } from "element-plus";
+import {
+  getArticleDetail,
+  getArticleComment,
+  addComment,
+} from "@/api/article.js";
 
 export default {
   props: {
@@ -58,6 +70,11 @@ export default {
     const state = reactive({
       articleContent: "",
       commentList: [],
+      articleId: Number(props.articleId),
+      commentContent: "",
+      parentId: null,
+      replyId: null,
+      loading: false
     });
 
     // 获取文章内容
@@ -181,8 +198,73 @@ export default {
       });
     }
 
+    // 发表评论
+    function sendComment() {
+      if (state.commentContent === "") {
+        ElMessage({
+          message: "请先输入评论内容",
+          type: "warning",
+          duration: 2 * 1000,
+        });
+      } else {
+        state.loading = true;
+
+        const data = {
+          articleId: state.articleId,
+          commentContent: state.commentContent,
+        };
+
+        if (state.parentId) {
+          data.parentId = state.parentId;
+        }
+
+        if (state.replyId) {
+          data.replyId = state.replyId;
+        }
+
+        addComment(data).then(() => {
+          clearComment();
+
+          state.loading = false;
+
+          ElMessage({
+            message: "发表成功，审核中...",
+            type: "success",
+            duration: 2 * 1000,
+          });
+        }).catch(() => {
+          state.loading = false;
+        });
+      }
+    }
+
+    // 清空评论相关参数
+    function clearComment() {
+      state.commentContent = "";
+      state.parentId = null;
+      state.replyId = null;
+    }
+
+    // 回复主评论
+    function replyComment(parentId) {
+      state.parentId = parentId;
+
+      document.getElementById("comment").focus();
+    }
+
+    // 回复子评论
+    function replyChildComment(parentId, replyId) {
+      state.parentId = parentId;
+      state.replyId = replyId;
+
+      document.getElementById("comment").focus();
+    }
+
     return {
       ...toRefs(state),
+      sendComment,
+      replyComment,
+      replyChildComment
     };
   },
 };
@@ -258,14 +340,14 @@ export default {
   .comment-box {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-around;
     padding: 10px;
 
     .textarea {
       overflow: hidden;
       margin: 0 auto;
       padding: 10px;
-      width: 100%;
+      width: 90%;
       height: 200px;
       box-sizing: border-box;
       resize: none;
@@ -274,7 +356,15 @@ export default {
       background: #f7f7f7;
       font-size: 16px;
       line-height: 1.5em;
-      color: #808080;
+      color: #000;
+      caret-color: red; // 改变光标颜色
+    }
+
+    .btn {
+      display: flex;
+      align-items: flex-end;
+      width: 8%;
+      height: 200px;
     }
   }
 }
@@ -327,6 +417,10 @@ export default {
       line-height: 30px;
       text-align: left;
     }
+
+    .comment-content {
+      cursor: pointer;
+    }
   }
 
   .child-comment {
@@ -340,6 +434,7 @@ export default {
       font-size: 16px;
       text-align: left;
       line-height: 1.5em;
+      cursor: pointer;
 
       span {
         padding: 0 5px;

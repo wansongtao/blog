@@ -17,12 +17,14 @@ service.interceptors.response.use((response) => {
         if (success) {
             return data;
         }
-
-        ElMessage({
-            message: message || '操作失败',
-            type: 'error',
-            duration: 2 * 1000
-        });
+        else {
+            ElMessage({
+                message: message || '操作失败',
+                type: 'error',
+                duration: 2 * 1000
+            });
+            return Promise.reject(message);
+        }
     },
     (error) => {
         console.error('err' + error);

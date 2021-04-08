@@ -54,3 +54,16 @@ export const getNewArticle = () => {
         method: 'GET',
     });
 };
+
+/**
+ * @description 发表评论
+ * @param {*} data 
+ * @returns {promise}
+ */
+export const addComment = (data) => {
+    return request({
+        url: '/blog/addcomment',
+        method: 'POST',
+        data
+    });
+};
