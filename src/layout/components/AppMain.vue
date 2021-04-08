@@ -17,6 +17,7 @@ export default {
 
 <style lang="scss" scoped>
 .focus {
-  flex: 1 1 auto;
+  margin-right: 20px;
+  width: calc(70% - 20px);
 }
 </style>

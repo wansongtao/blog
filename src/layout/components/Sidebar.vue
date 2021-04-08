@@ -173,7 +173,6 @@ export default defineComponent({
 }
 
 .sidebar {
-  margin-left: 20px;
   width: 30%;
 
   .search {
