@@ -2,8 +2,8 @@
   <div class="container">
     <div class="focus">
       <div class="animate-content">
-        <div class="name">{{name}}</div>
-        <div class="des">{{lifeMotto}}</div>
+        <div class="name">{{ name }}</div>
+        <div class="des">{{ lifeMotto }}</div>
         <el-button type="primary" @click="jumpBlog">Enter Blog</el-button>
       </div>
     </div>
@@ -14,30 +14,34 @@
         在这个世界既没有幸福也没有不幸，只是一种处境和另一种处境的比较，仅此而已，唯有经历过最大厄运磨难的人，才能感受到最大的乐趣。
       </p>
       <div class="art-list" v-if="articles.length > 0">
-        <ArticleCard v-for="(item, index) in articles" :key="index" :article="item" />
+        <ArticleCard
+          v-for="(item, index) in articles"
+          :key="index"
+          :article="item"
+        />
       </div>
     </div>
     <footer class="footer">
       <div class="ft-content">
-          <div class="ft-content-item">
-              <h6>{{name}}</h6>
-              <p>{{lifeMotto}}</p>
-              <el-button type="primary" @click="jumpBlog">Enter Blog</el-button>
+        <div class="ft-content-item">
+          <h6>{{ name }}</h6>
+          <p>{{ lifeMotto }}</p>
+          <el-button type="primary" @click="jumpBlog">Enter Blog</el-button>
+        </div>
+        <div class="ft-content-item">
+          <h6>相关链接</h6>
+          <div class="ft-link">
+            <div v-for="(item, index) in menuList" :key="index">
+              <router-link :to="item.path">{{ item.title }}</router-link>
+            </div>
           </div>
-          <div class="ft-content-item">
-              <h6>相关链接</h6>
-              <div class="ft-link">
-                  <div v-for="(item, index) in menuList" :key="index">
-                    <router-link :to="item.path" >{{item.title}}</router-link>
-                  </div>
-              </div>
-          </div>
-          <div class="ft-content-item">
-              <h6>联系我</h6>
-              <div class="about-me">weChat：{{weChat}}</div>
-              <div class="about-me">QQ: {{qqAcc}}</div>
-              <div class="about-me">email: {{email}}</div>
-          </div>
+        </div>
+        <div class="ft-content-item">
+          <h6>联系我</h6>
+          <div class="about-me">weChat：{{ weChat }}</div>
+          <div class="about-me">QQ: {{ qqAcc }}</div>
+          <div class="about-me">email: {{ email }}</div>
+        </div>
       </div>
       <BeiAn />
     </footer>
@@ -45,33 +49,33 @@
 </template>
 
 <script>
-import {defineComponent, toRefs, reactive } from 'vue';
-import { useStore } from 'vuex';
-import { useRouter } from 'vue-router';
-import menu from '@/hooks/menu.js';
-import BeiAn from '@/components/footerBeiAn.vue';
-import ArticleCard from '@/components/articleCard.vue';
-import {getHotArticle} from '@/api/article.js';
+import { defineComponent, toRefs, reactive, onMounted } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+import menu from "@/hooks/menu.js";
+import BeiAn from "@/components/footerBeiAn.vue";
+import ArticleCard from "@/components/articleCard.vue";
+import { getHotArticle, getNewArticle } from "@/api/article.js";
 
 export default defineComponent({
   components: {
     BeiAn,
-    ArticleCard
+    ArticleCard,
   },
   setup() {
     const state = reactive({
-      name: '',
-      lifeMotto: '',
-      weChat: '',
-      qqAcc: '',
-      email: '',
-      articles: []
+      name: "",
+      lifeMotto: "",
+      weChat: "",
+      qqAcc: "",
+      email: "",
+      articles: [],
     });
 
     // 调用vuex获取用户信息
     const store = useStore();
 
-    store.dispatch('getUserInfo').then((data) => {
+    store.dispatch("getUserInfo").then((data) => {
       state.name = data.name;
       state.lifeMotto = data.lifeMotto;
       state.weChat = data.weChat;
@@ -84,20 +88,38 @@ export default defineComponent({
 
     const router = useRouter();
     function jumpBlog() {
-      router.push('/blog/article');
+      router.push("/blog/article");
     }
 
     // 获取热门文章列表
-    getHotArticle().then((data) => {
-      state.articles = data.articles.slice(0, 3);
+    if (!sessionStorage.hotArticleList) {
+      getHotArticle().then((data) => {
+        state.articles = data.articles.slice(0, 3);
+
+        sessionStorage.hotArticleList = JSON.stringify(data.articles);
+      });
+    }
+    else {
+      state.articles = JSON.parse(sessionStorage.hotArticleList).slice(0, 3);
+    }
+
+    onMounted(() => {
+      if (!sessionStorage.newArticleList) {
+        // 获取最新文章列表，并保存至会话存储中
+        getNewArticle().then((data) => {
+          const newList = data.articles;
+
+          sessionStorage.newArticleList = JSON.stringify(newList);
+        });
+      }
     });
 
     return {
       ...toRefs(state),
       menuList,
-      jumpBlog
+      jumpBlog,
     };
-  }
+  },
 });
 </script>
 
@@ -198,49 +220,49 @@ export default defineComponent({
 }
 
 .ft-content-item {
-    flex: 1;
-    height: 130px;
-    color: #fff;
-    text-align: left;
+  flex: 1;
+  height: 130px;
+  color: #fff;
+  text-align: left;
 
-    h6 {
-        font-size: 18px;
-        line-height: 40px;
-    }
+  h6 {
+    font-size: 18px;
+    line-height: 40px;
+  }
 
-    p {
-        margin-bottom: 10px;
-        font-size: 14px;
-        line-height: 30px;
-    }
+  p {
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 30px;
+  }
 }
 
 .ft-link {
-    display: flex;
-    flex-wrap: wrap;
-    align-content: space-around;
-    padding: 10px 0;
-    height: 70px;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: space-around;
+  padding: 10px 0;
+  height: 70px;
 
-    div {
-        width: 50%;
-        font-size: 14px;
-        color: #fff;
+  div {
+    width: 50%;
+    font-size: 14px;
+    color: #fff;
 
-        ::v-deep a {
-          display: block;
-          text-decoration: none;
-          color: #fff;
-        }
-
-        ::v-deep a:hover {
-          color: #82b440;
-        }
+    ::v-deep a {
+      display: block;
+      text-decoration: none;
+      color: #fff;
     }
+
+    ::v-deep a:hover {
+      color: #82b440;
+    }
+  }
 }
 
 .about-me {
-    font-size: 14px;
-    line-height: 30px;
+  font-size: 14px;
+  line-height: 30px;
 }
 </style>
