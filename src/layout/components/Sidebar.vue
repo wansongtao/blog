@@ -11,24 +11,20 @@
       <span class="iconfont iconsousuo"></span>
     </div>
     <div class="search-list" @mouseleave="activeIndex = 0">
-      <template v-if="searchList.length > 0">
-        <div
-          class="list-item"
-          v-for="(item, index) in searchList"
-          :key="index"
-          @mouseenter="changeSelected(index)"
-        >
-          {{ item.articleTitle }}
-        </div>
-        <div
-          class="mask"
-          :style="`top: ${
-            20 + activeIndex * 50
-          }px; transition: all 0.5s linear;`"
-          @click="jumpPage(searchList[activeIndex].articleId)"
-        ></div>
-      </template>
-      <template v-else> 未搜索到任何相关内容... </template>
+      <div
+        class="list-item"
+        v-for="(item, index) in searchList"
+        :key="index"
+        @mouseenter="changeSelected(index)"
+      >
+        {{ item.articleTitle }}
+      </div>
+      <div
+        class="mask"
+        :style="`top: ${20 + activeIndex * 50}px; transition: all 0.5s linear;`"
+        @click="jumpPage(searchList[activeIndex].articleId)"
+      ></div>
+      <p v-show="searchList.length === 0">未搜索到任何相关内容...</p>
     </div>
     <div class="send-word">
       <h6>寄语</h6>
@@ -48,14 +44,19 @@
     <div class="hot-article" v-if="hotList.length > 0">
       <h6>热门文章</h6>
       <div class="hot-list">
-        <div class="hot-item" v-for="(item, index) in hotList" :key="index" @click="jumpPage(item.articleId)">
+        <div
+          class="hot-item"
+          v-for="(item, index) in hotList"
+          :key="index"
+          @click="jumpPage(item.articleId)"
+        >
           <div
             :class="{
               'hot-icon': true,
               'hot-icon-frist': index === 0,
               'hot-icon-two': index === 1,
               'hot-icon-three': index === 2,
-              'hot-icon-font': index <= 2
+              'hot-icon-font': index <= 2,
             }"
           >
             {{ index + 1 }}
@@ -70,11 +71,7 @@
 <script>
 import { defineComponent, ref, reactive, toRefs, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
-import {
-  getNewArticle,
-  getSearchArticle,
-  getHotArticle,
-} from "@/api/article.js";
+import { getSearchArticle, getHotArticle } from "@/api/article.js";
 
 export default defineComponent({
   setup() {
@@ -86,30 +83,50 @@ export default defineComponent({
       hotList: [],
     });
 
+    const router = useRouter();
+
     // 初始化搜索列表
     function initSearchList() {
-      getNewArticle().then((data) => {
-        state.searchList = data.articles.slice(0, 6).map((item) => {
-          return {
-            articleId: item.articleId,
-            articleTitle: item.articleTitle,
-          };
-        });
+      if (!sessionStorage.newArticleList) {
+        router.push("/");
+        return;
+      }
+
+      const data = JSON.parse(sessionStorage.newArticleList);
+
+      state.searchList = data.slice(0, 6).map((item) => {
+        return {
+          articleId: item.articleId,
+          articleTitle: item.articleTitle,
+        };
       });
     }
 
-    onMounted(() => {
-      initSearchList();
+    initSearchList();
 
+    onMounted(() => {
       // 获取热门文章列表
-      getHotArticle().then((data) => {
-        state.hotList = data.articles.slice(0, 8).map((item) => {
-          return {
-            articleId: item.articleId,
-            articleTitle: item.articleTitle,
-          };
+      if (!sessionStorage.hotArticleList) {
+        getHotArticle().then((data) => {
+          state.hotList = data.articles.slice(0, 8).map((item) => {
+            return {
+              articleId: item.articleId,
+              articleTitle: item.articleTitle,
+            };
+          });
+
+          sessionStorage.hotArticleList = JSON.stringify(data.articles.slice(0, 8));
         });
-      });
+      } else {
+        state.hotList = JSON.parse(sessionStorage.hotArticleList)
+          .slice(0, 8)
+          .map((item) => {
+            return {
+              articleId: item.articleId,
+              articleTitle: item.articleTitle,
+            };
+          });
+      }
     });
 
     // 鼠标移入时，保存索引
@@ -139,8 +156,6 @@ export default defineComponent({
         }
       }
     );
-
-    const router = useRouter();
 
     // 跳转到文章详情页
     function jumpPage(articleId) {
@@ -174,6 +189,7 @@ export default defineComponent({
 
 .sidebar {
   width: 30%;
+  animation: side-ani 0.8s ease-in-out 0s 1 forwards;
 
   .search {
     position: relative;
@@ -324,7 +340,22 @@ export default defineComponent({
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+
+      &:hover {
+        color: #6bc30d;
+      }
     }
+  }
+}
+
+@keyframes side-ani {
+  from {
+    opacity: 0;
+    transform: translateY(calc(100vh - 90px));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 </style>
