@@ -189,7 +189,7 @@ export default defineComponent({
 
 .sidebar {
   width: 30%;
-  animation: side-ani 0.8s ease-in-out 0s 1 forwards;
+  animation: side-ani 0.6s linear 0s 1 forwards;
 
   .search {
     position: relative;
@@ -351,11 +351,11 @@ export default defineComponent({
 @keyframes side-ani {
   from {
     opacity: 0;
-    transform: translateY(calc(100vh - 90px));
+    transform: translateX(15vw);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
   }
 }
 </style>
