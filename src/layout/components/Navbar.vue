@@ -5,51 +5,53 @@
       <div class="nav">
         <div
           class="nav-item"
-          :class="{'active-item': activeIndex === -1}"
-          @click="jumpPage('/', -1)"
+          @click="jumpPage('/')"
         >
           首页
-          <div class="line" :class="{'active-line': activeIndex === -1}" />
+          <div class="line" />
         </div>
         <div
           class="nav-item"
-          :class="{'active-item': activeIndex === index}"
+          :class="{'active-item': item.path === currPath}"
           v-for="(item, index) in menuList"
           :key="index"
-          @click="jumpPage(item.path, index)"
+          @click="jumpPage(item.path)"
         >
           {{ item.title || "" }}
-          <div class="line" :class="{'active-line': activeIndex === index}" />
+          <div class="line" :class="{'active-line': item.path === currPath}" />
         </div>
       </div>
-      <img src="@/assets/images/chutian.jpg" alt="icon" class="chutian" @click="jumpPage('/', -1)" />
+      <img src="@/assets/images/chutian.jpg" alt="icon" class="chutian" @click="jumpPage('/')" />
     </div>
   </div>
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
-import { useRouter } from "vue-router";
+import { defineComponent, computed } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import menu from "@/hooks/menu.js";
 
 export default defineComponent({
   setup() {
-    const activeIndex = ref(0);
-
     // 获取要显示的菜单列表
     const menuList = menu();
 
     // 跳转页面
     const router = useRouter();
-    function jumpPage(path, index) {
-      activeIndex.value = index || 0;
+    function jumpPage(path) {
       router.push(path);
     }
+
+    const route = useRoute();
+
+    const currPath = computed(() => {
+      return route.path;
+    });
 
     return {
       menuList,
       jumpPage,
-      activeIndex
+      currPath
     };
   },
 });
