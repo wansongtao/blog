@@ -32,3 +32,25 @@ export const getNewArticle = () => {
         method: 'GET',
     });
 };
+
+/**
+ * @description 文章详情
+ * @returns {promise}
+ */
+ export const getArticleDetail = (articleId) => {
+    return request({
+        url: `/blog/getarticlecontent?articleId=${articleId}`,
+        method: 'GET',
+    });
+};
+
+/**
+ * @description 文章评论列表
+ * @returns {promise}
+ */
+ export const getArticleComment = (articleId) => {
+    return request({
+        url: `/blog/getcommentlist?articleId=${articleId}`,
+        method: 'GET',
+    });
+};
