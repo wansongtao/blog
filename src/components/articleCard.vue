@@ -1,5 +1,5 @@
 <template>
-  <div class="list-item" @click="articleDetails(article.articleId)">
+  <div class="list-item" @click="articleDetails(article.articleId, article.articleTitle)">
     <div class="list-img">
       <img src="@/assets/images/new1.jpg" alt="封面"/>
     </div>
@@ -40,8 +40,8 @@ export default defineComponent({
     /**
      * @description 跳转到文章详情页
      */
-    function articleDetails(articleId) {
-      router.push(`/blog/details/${articleId}`);
+    function articleDetails(articleId, articleTitle) {
+      router.push(`/blog/details/${articleId}/${articleTitle}`);
     }
 
     return {

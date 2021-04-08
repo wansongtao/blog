@@ -22,7 +22,7 @@
       <div
         class="mask"
         :style="`top: ${20 + activeIndex * 50}px; transition: all 0.5s linear;`"
-        @click="jumpPage(searchList[activeIndex].articleId)"
+        @click="jumpPage(searchList[activeIndex].articleId, searchList[activeIndex].articleTitle)"
       ></div>
       <p v-show="searchList.length === 0">未搜索到任何相关内容...</p>
     </div>
@@ -48,7 +48,7 @@
           class="hot-item"
           v-for="(item, index) in hotList"
           :key="index"
-          @click="jumpPage(item.articleId)"
+          @click="jumpPage(item.articleId, item.articleTitle)"
         >
           <div
             :class="{
@@ -158,8 +158,8 @@ export default defineComponent({
     );
 
     // 跳转到文章详情页
-    function jumpPage(articleId) {
-      router.push(`/blog/details/${articleId}`);
+    function jumpPage(articleId, articleTitle) {
+      router.push(`/blog/details/${articleId}/${articleTitle}`);
     }
 
     return {

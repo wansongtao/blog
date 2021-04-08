@@ -37,7 +37,7 @@ const routes = [
         hidden: false
       },
       {
-        path: 'details/:articleId',
+        path: 'details/:articleId/:articleTitle',
         name: 'Details',
         component: () => import('@/views/details.vue'),
         meta: { title: '文章详情' },
