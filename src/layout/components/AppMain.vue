@@ -5,12 +5,21 @@
 </template>
 
 <script>
+import { computed } from 'vue';
+import {useRoute} from 'vue-router';
+
 export default {
-  name: 'AppMain',
-  computed: {
-    key() {
-      return this.$route.path;
-    }
+  name: "AppMain",
+  setup() {
+    const route = useRoute();
+
+    const key = computed(() => {
+      return route.path;
+    });
+
+    return {
+      key
+    };
   }
 };
 </script>
