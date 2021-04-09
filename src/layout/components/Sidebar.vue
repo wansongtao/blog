@@ -202,8 +202,8 @@ export default defineComponent({
 
     .search-input {
       display: block;
-      margin: 0 30px;
-      padding: 0 20px;
+      margin: 0 20px;
+      padding: 0 10px 0 30px;
       width: 100%;
       height: 40px;
       border-radius: 20px;
@@ -214,13 +214,12 @@ export default defineComponent({
     .iconfont {
       position: absolute;
       top: 20px;
-      right: 30px;
+      left: 18px;
       display: block;
       width: 40px;
       height: 40px;
       line-height: 40px;
       text-align: center;
-      cursor: pointer;
     }
   }
 }
@@ -332,7 +331,7 @@ export default defineComponent({
     }
 
     .hot-content {
-      flex: 1 1 auto;
+      flex: 1;
       padding: 10px;
       text-align: left;
       font-size: 16px;
