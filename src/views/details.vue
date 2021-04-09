@@ -325,6 +325,14 @@ export default {
       max-width: 100%;
     }
 
+    ::v-deep pre {
+      padding: 0 10px;
+      text-align: left;
+      line-height: 2em;
+      background: #eee;
+      overflow-x: auto;
+    }
+
     ::v-deep h1,
     h2,
     h3,
