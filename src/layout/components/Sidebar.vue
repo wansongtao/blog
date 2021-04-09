@@ -22,7 +22,7 @@
       </div>
       <div
         class="mask"
-        :style="`top: ${20 + activeIndex * 50}px; transition: all 0.5s linear;`"
+        :style="`top: ${20 + activeIndex * 50}px; transition: all 0.4s linear;`"
         @click="jumpPage(searchList[activeIndex].articleId, searchList[activeIndex].articleTitle)"
       ></div>
       <p v-show="searchList.length === 0">未搜索到任何相关内容...</p>
