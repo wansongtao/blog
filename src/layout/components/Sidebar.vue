@@ -16,6 +16,7 @@
         v-for="(item, index) in searchList"
         :key="index"
         @mouseenter="changeSelected(index)"
+        @click="jumpPage(item.articleId, item.articleTitle)"
       >
         {{ item.articleTitle }}
       </div>
