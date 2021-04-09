@@ -19,6 +19,8 @@ h6 {
 }
 
 body {
+  min-width: 1280px;
+
   &::-webkit-scrollbar {
     width: 8px;
     height: 10px;
