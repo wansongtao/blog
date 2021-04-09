@@ -6,7 +6,7 @@ import request from '@/untils/request';
  */
 export const getUserInfo = () => {
     return request({
-        url: '/api/blog/getuserinfo',
+        url: '/blog/getuserinfo',
         method: 'get'
     });
 };
