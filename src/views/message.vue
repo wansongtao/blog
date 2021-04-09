@@ -102,7 +102,7 @@ export default {
       const { scrollHeight, scrollTop, clientHeight } = e.target;
       
       // scrollTop + clientHeight = scrollHeight 时，滚动到底部
-      if (state.messageList.length >= state.pageSize && scrollTop + clientHeight + 60 >= scrollHeight && state.isMore) {
+      if (scrollTop + clientHeight + 60 >= scrollHeight && state.isMore) {
         state.currentPage++;
         state.pageSize++;
         getMessage();
