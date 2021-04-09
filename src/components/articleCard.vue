@@ -93,14 +93,14 @@ export default defineComponent({
     font-weight: bold;
 
     .main-title {
-      width: 87%;
+      flex: 1;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
     .hot {
-      width: 12%;
+      padding: 0 6px;
       text-align: right;
       font-weight: 300;
     }
