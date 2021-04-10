@@ -31,8 +31,8 @@ export default defineComponent({
 
     // 使用计算属性处理日期
     const chinaDate = computed(() => {
-      const dateArr = addTime.value.replace(/-/g, "/").substr(0, 10).split("/");
-
+      const dateArr = new Date(addTime.value).toLocaleDateString().split('/');
+      
       return `${dateArr[0]}年${dateArr[1]}月${dateArr[2]}日`;
     });
 
