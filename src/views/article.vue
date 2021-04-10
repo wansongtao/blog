@@ -53,8 +53,9 @@ export default defineComponent({
 
     /**
      * @description 从服务器获取文章
+     * @param {boolean} isReplace 是否要覆盖newList
      */
-    const getArticle = () => {
+    const getArticle = (isReplace = false) => {
       state.isReqData = true;
 
       getNewArticle({
@@ -65,8 +66,13 @@ export default defineComponent({
         .then((data) => {
           if (data.articles) {
             // 判断是否返回了文章
-            state.newList.push(...data.articles);
 
+            if (isReplace) {
+              state.newList = data.articles;
+            } else {
+              state.newList.push(...data.articles);
+            }
+            
             sessionStorage.newArticleList = JSON.stringify(state.newList);
 
             if (data.articles.length < state.pageSize) {
@@ -154,9 +160,11 @@ export default defineComponent({
     // 改变文章分类，搜索对应分类的文章
     const changeType = () => {
       sessionStorage.removeItem("newArticleList");
-      state.newList = [];
       state.currentPage = 1;
-      getArticle();
+      state.isMore = true;
+
+      // 请求数据并覆盖掉其他分类的数据
+      getArticle(true);
     };
 
     return {
