@@ -1,6 +1,18 @@
 <template>
   <div class="container">
     <h6>最新文章</h6>
+    <div class="search-title">
+      文章筛选：
+      <el-select v-model="value" filterable placeholder="请选择文章分类">
+        <el-option
+          v-for="item in options"
+          :key="item"
+          :label="item"
+          :value="item"
+        >
+        </el-option>
+      </el-select>
+    </div>
     <div class="article-list" v-if="newList.length > 0" @scroll="loadArticle">
       <ArticleCard
         v-for="(item, index) in newList"
@@ -27,6 +39,8 @@ export default defineComponent({
       isMore: true,
       currentPage: 1,
       pageSize: 12,
+      options: ['js', 'ts', 'html/css'],
+      value: ''
     });
 
     /**
@@ -84,12 +98,13 @@ export default defineComponent({
       }
     };
 
-    
-
     if (!sessionStorage.newArticleList) {
       getArticle();
     } else {
-      state.newList = JSON.parse(sessionStorage.newArticleList).slice(0, state.pageSize);
+      state.newList = JSON.parse(sessionStorage.newArticleList).slice(
+        0,
+        state.pageSize
+      );
     }
 
     return {
@@ -152,6 +167,13 @@ export default defineComponent({
   align-items: center;
   justify-content: center;
   height: 400px;
+}
+
+.search-title {
+  padding: 10px;
+  margin-top: 10px;
+  text-align: left;
+  height: 40px;
 }
 
 @keyframes main-ani {
