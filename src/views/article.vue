@@ -26,7 +26,7 @@
         :article="item"
       />
     </div>
-    <div class="tempty" v-else>数据为空...</div>
+    <div class="tempty" v-else>未查找到相关文章...</div>
   </div>
 </template>
 
@@ -82,6 +82,10 @@ export default defineComponent({
           } else {
             // 没有返回文章，则设置为false
             state.isMore = false;
+
+            if (isReplace) {
+              state.newList = [];
+            }
           }
 
           state.isReqData = false;
