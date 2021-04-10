@@ -15,11 +15,11 @@ export const getHotArticle = () => {
  * @description 获取最新文章
  * @returns {promise}
  */
-export const getNewArticle = (params) => {
+export const getNewArticle = (data) => {
     return request({
         url: '/blog/getnewarticle',
-        method: 'GET',
-        params
+        method: 'post',
+        data
     });
 };
 
@@ -66,5 +66,16 @@ export const addComment = (data) => {
         url: '/blog/addcomment',
         method: 'POST',
         data
+    });
+};
+
+/**
+ * @description 获取文章分类
+ * @returns 
+ */
+export const getCategory = () => {
+    return request({
+        url: '/blog/getcategory',
+        method: 'GET'
     });
 };

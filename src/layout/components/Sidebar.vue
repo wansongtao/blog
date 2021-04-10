@@ -88,12 +88,12 @@ export default defineComponent({
 
     // 初始化搜索列表
     function initSearchList() {
-      if (!sessionStorage.newArticleList) {
+      if (!sessionStorage.hotArticleList) {
         router.push("/");
         return;
       }
 
-      const data = JSON.parse(sessionStorage.newArticleList);
+      const data = JSON.parse(sessionStorage.hotArticleList);
 
       state.searchList = data.slice(0, 6).map((item) => {
         return {

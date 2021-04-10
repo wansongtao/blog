@@ -3,12 +3,18 @@
     <h6>最新文章</h6>
     <div class="search-title">
       文章筛选：
-      <el-select v-model="value" filterable placeholder="请选择文章分类">
+      <el-select
+        v-model="categoryType"
+        filterable
+        clearable
+        placeholder="请选择文章分类"
+        @change="changeType"
+      >
         <el-option
-          v-for="item in options"
-          :key="item"
-          :label="item"
-          :value="item"
+          v-for="item in categories"
+          :key="item.categoryType"
+          :label="item.categoryType"
+          :value="item.categoryType"
         >
         </el-option>
       </el-select>
@@ -25,71 +31,94 @@
 </template>
 
 <script>
-import { defineComponent, reactive, toRefs } from "vue";
-import { getNewArticle } from "@/api/article.js";
+import { defineComponent, reactive, toRefs, onMounted } from "vue";
+import { getNewArticle, getCategory } from "@/api/article.js";
 import ArticleCard from "@/components/articleCard.vue";
 
 export default defineComponent({
+  name: "articlelist",
   components: {
     ArticleCard,
   },
   setup() {
     const state = reactive({
-      newList: [],
-      isMore: true,
-      currentPage: 1,
-      pageSize: 12,
-      options: ['js', 'ts', 'html/css'],
-      value: ''
+      newList: [], // 文章列表数据
+      isMore: true, // 是否还有更多文章
+      currentPage: 1, // 当前页
+      pageSize: 12, // 每页大小
+      categories: [], // 分类数据
+      categoryType: "", // 当前选择的分类
+      isReqData: false // 是否请求了服务器的文章列表数据
     });
 
     /**
      * @description 从服务器获取文章
      */
     const getArticle = () => {
+      state.isReqData = true;
+
       getNewArticle({
         currentPage: state.currentPage,
         pageSize: state.pageSize,
+        categoryType: state.categoryType,
       })
         .then((data) => {
           if (data.articles) {
+            // 判断是否返回了文章
             state.newList.push(...data.articles);
 
             sessionStorage.newArticleList = JSON.stringify(state.newList);
 
             if (data.articles.length < state.pageSize) {
+              // 根据返回的数据长度，判断是否还有更多文章
               state.isMore = false;
             }
           } else {
+            // 没有返回文章，则设置为false
             state.isMore = false;
           }
-          console.log(state.isMore);
+
+          state.isReqData = false;
         })
         .catch(() => {
           state.isMore = false;
+          state.isReqData = false;
         });
     };
 
     // 滚动加载更多文章
     const loadArticle = (e) => {
+      if (state.isReqData) {
+        // 请求数据还未结束，不再加载
+        return;
+      }
+
       const { scrollHeight, scrollTop, clientHeight } = e.target;
 
-      // scrollTop + clientHeight = scrollHeight 时，滚动到底部
-      if (scrollTop + clientHeight + 20 >= scrollHeight && state.isMore) {
+      // 在滚动到距离底部40px时，加载更多
+      if (scrollTop + clientHeight + 40 >= scrollHeight && state.isMore) {
         state.currentPage++;
 
         if (!sessionStorage.newArticleList) {
           // 本地没有则直接从服务器拉取
           getArticle();
         } else {
+          // 取出本地数据
           const list = JSON.parse(sessionStorage.newArticleList);
 
+          // 判断本地是否有对应页码的数据
           if (list.length > (state.currentPage - 1) * state.pageSize) {
+            // 取出对应页码的数据
             const addArticle = list.slice(
-              state.pageSize * state.currentPage,
-              state.pageSize * state.currentPage + state.pageSize
+              state.pageSize * (state.currentPage - 1),
+              state.pageSize * state.currentPage
             );
+
             state.newList.push(...addArticle);
+
+            if (addArticle.length < state.pageSize) {
+              state.isMore = false;
+            }
           } else {
             // 本地数据不足，从服务器拉取
             getArticle();
@@ -98,18 +127,42 @@ export default defineComponent({
       }
     };
 
-    if (!sessionStorage.newArticleList) {
-      getArticle();
-    } else {
+    if (sessionStorage.newArticleList) {
+      // 取出本地数据
       state.newList = JSON.parse(sessionStorage.newArticleList).slice(
         0,
         state.pageSize
       );
+    } else {
+      // 没有本地数据
+      getArticle();
     }
+
+    onMounted(() => {
+      // 获取文章分类数据
+      if (sessionStorage.categories) {
+        state.categories = JSON.parse(sessionStorage.categories);
+      } else {
+        getCategory().then((data) => {
+          state.categories = data.categories;
+
+          sessionStorage.categories = JSON.stringify(data.categories);
+        });
+      }
+    });
+
+    // 改变文章分类，搜索对应分类的文章
+    const changeType = () => {
+      sessionStorage.removeItem("newArticleList");
+      state.newList = [];
+      state.currentPage = 1;
+      getArticle();
+    };
 
     return {
       ...toRefs(state),
       loadArticle,
+      changeType,
     };
   },
 });
@@ -137,10 +190,12 @@ export default defineComponent({
 
   .article-list {
     display: flex;
-    padding: 10px;
-    height: 1155px;
+    padding: 0 10px;
+    height: 1175px;
     flex-wrap: wrap;
     overflow-y: auto;
+    justify-content: flex-start;
+    align-content: flex-start;
 
     &::-webkit-scrollbar {
       width: 6px;
