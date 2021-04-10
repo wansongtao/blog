@@ -104,7 +104,6 @@ export default {
       // scrollTop + clientHeight = scrollHeight 时，滚动到底部
       if (scrollTop + clientHeight + 60 >= scrollHeight && state.isMore) {
         state.currentPage++;
-        state.pageSize++;
         getMessage();
       }
     }

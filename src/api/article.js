@@ -15,10 +15,11 @@ export const getHotArticle = () => {
  * @description 获取最新文章
  * @returns {promise}
  */
-export const getNewArticle = () => {
+export const getNewArticle = (params) => {
     return request({
         url: '/blog/getnewarticle',
-        method: 'GET'
+        method: 'GET',
+        params
     });
 };
 
