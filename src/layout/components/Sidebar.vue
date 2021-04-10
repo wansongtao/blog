@@ -7,8 +7,9 @@
         maxlength="50"
         class="search-input"
         v-model="keyword"
+        @keypress.enter="searchHandler"
       />
-      <span class="iconfont iconsousuo"></span>
+      <span class="iconfont iconsousuo" @click="searchHandler"></span>
     </div>
     <div class="search-list" @mouseleave="activeIndex = 0">
       <div
@@ -23,7 +24,12 @@
       <div
         class="mask"
         :style="`top: ${20 + activeIndex * 50}px; transition: all 0.4s linear;`"
-        @click="jumpPage(searchList[activeIndex].articleId, searchList[activeIndex].articleTitle)"
+        @click="
+          jumpPage(
+            searchList[activeIndex].articleId,
+            searchList[activeIndex].articleTitle
+          )
+        "
       ></div>
       <p v-show="searchList.length === 0">未搜索到任何相关内容...</p>
     </div>
@@ -70,8 +76,9 @@
 </template>
 
 <script>
-import { defineComponent, ref, reactive, toRefs, onMounted, watch } from "vue";
+import { defineComponent, ref, reactive, toRefs, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { ElMessage } from "element-plus";
 import { getSearchArticle, getHotArticle } from "@/api/article.js";
 
 export default defineComponent({
@@ -82,6 +89,7 @@ export default defineComponent({
       keyword: "",
       searchList: [],
       hotList: [],
+      loading: false,
     });
 
     const router = useRouter();
@@ -116,7 +124,9 @@ export default defineComponent({
             };
           });
 
-          sessionStorage.hotArticleList = JSON.stringify(data.articles.slice(0, 8));
+          sessionStorage.hotArticleList = JSON.stringify(
+            data.articles.slice(0, 8)
+          );
         });
       } else {
         state.hotList = JSON.parse(sessionStorage.hotArticleList)
@@ -135,28 +145,43 @@ export default defineComponent({
       activeIndex.value = index;
     }
 
-    // 监听搜索框的值
-    watch(
-      () => state.keyword,
-      (newVal) => {
-        if (newVal !== "") {
-          getSearchArticle(newVal)
-            .then((data) => {
-              state.searchList = data.articles.slice(0, 6).map((item) => {
-                return {
-                  articleId: item.articleId,
-                  articleTitle: item.articleTitle,
-                };
-              });
-            })
-            .catch(() => {
-              state.searchList = [];
-            });
-        } else {
-          initSearchList();
+    // 搜索文章
+    const searchHandler = () => {
+      if (state.keyword !== "") {
+        if (state.loading) {
+          ElMessage({
+            message: "搜索中...",
+            type: "warning",
+            duration: 1 * 1500,
+          });
+          return;
         }
+
+        state.loading = true;
+
+        getSearchArticle(state.keyword)
+          .then((data) => {
+            state.searchList = data.articles.slice(0, 6).map((item) => {
+              return {
+                articleId: item.articleId,
+                articleTitle: item.articleTitle,
+              };
+            });
+            state.loading = false;
+          })
+          .catch(() => {
+            state.searchList = [];
+            state.loading = false;
+          });
+      } else {
+        ElMessage({
+          message: "请输入您要搜索的内容",
+          type: "warning",
+          duration: 1 * 1500,
+        });
+        initSearchList();
       }
-    );
+    };
 
     // 跳转到文章详情页
     function jumpPage(articleId, articleTitle) {
@@ -168,6 +193,7 @@ export default defineComponent({
       changeSelected,
       ...toRefs(state),
       jumpPage,
+      searchHandler,
     };
   },
 });
@@ -215,12 +241,13 @@ export default defineComponent({
     .iconfont {
       position: absolute;
       top: 20px;
-      left: 18px;
+      right: 18px;
       display: block;
       width: 40px;
       height: 40px;
       line-height: 40px;
       text-align: center;
+      cursor: pointer;
     }
   }
 }
