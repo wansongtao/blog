@@ -55,6 +55,8 @@ export default {
 
     // 获取留言
     function getMessage() {
+      state.loading = true;
+
       getMessageList({
         currentPage: state.currentPage,
         pageSize: state.pageSize,
@@ -64,8 +66,11 @@ export default {
         if (data.messageList.length < state.pageSize) {
           state.isMore = false;
         }
+
+        state.loading = false;
       }).catch(() => {
         state.isMore = false;
+        state.loading = false;
       });
     }
 
@@ -99,6 +104,10 @@ export default {
 
     // 滚动加载留言
     function scrollHandler(e) {
+      if (state.loading) {
+        return;
+      }
+      
       const { scrollHeight, scrollTop, clientHeight } = e.target;
       
       // scrollTop + clientHeight = scrollHeight 时，滚动到底部
