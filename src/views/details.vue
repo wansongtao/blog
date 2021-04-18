@@ -14,7 +14,9 @@
           v-model="commentContent"
         ></textarea>
         <div class="btn">
-          <el-button type="primary" @click="sendComment" :loading="loading">发表</el-button>
+          <el-button type="primary" @click="sendComment" :loading="loading"
+            >发表</el-button
+          >
         </div>
       </div>
       <template v-if="commentList !== -1 && commentList.length > 0">
@@ -33,7 +35,11 @@
             </div>
           </div>
           <div class="child-comment" v-if="item.children">
-            <p v-for="(child, idx) in item.children" :key="idx" @click="replyChildComment(item.commentId, child.commentId)">
+            <p
+              v-for="(child, idx) in item.children"
+              :key="idx"
+              @click="replyChildComment(item.commentId, child.commentId)"
+            >
               <span>{{ child.commentId }}</span
               ><i v-if="child.replyId">回复</i
               ><span>{{ child.replyId || "" }}</span
@@ -74,33 +80,12 @@ export default {
       commentContent: "",
       parentId: null,
       replyId: null,
-      loading: false
+      loading: false,
     });
 
-    // 获取文章内容
-    if (sessionStorage.articleDetails) {
-      // 取出会话存储中保存的文章相关数据
-      const article = JSON.parse(sessionStorage.articleDetails);
-
-      // 查找是否有这篇文章且有这篇文章的内容
-      const index = article.findIndex(
-        (item) => item.articleId === props.articleId && item.articleContent
-      );
-
-      if (index !== -1) {
-        // 有，直接赋值
-        state.articleContent = article[index].articleContent;
-      } else {
-        // 没有，从服务器拉取
-        getArticleContent();
-      }
-    } else {
-      getArticleContent();
-    }
-
     // 从服务器获取文章内容并存入会话存储
-    function getArticleContent() {
-      getArticleDetail(props.articleId).then((data) => {
+    const getArticleContent = (articleId = props.articleId) => {
+      getArticleDetail(articleId).then((data) => {
         state.articleContent = data.articleContent;
 
         if (sessionStorage.articleDetails) {
@@ -109,7 +94,7 @@ export default {
 
           // 查找是否有这篇文章
           const index = details.findIndex(
-            (item) => item.articleId === props.articleId
+            (item) => item.articleId === articleId
           );
 
           if (index !== -1) {
@@ -118,7 +103,7 @@ export default {
           } else {
             // 没有，添加一个对象包含文章id字段和文章内容字段
             details.push({
-              articleId: props.articleId,
+              articleId,
               articleContent: data.articleContent,
             });
           }
@@ -128,37 +113,17 @@ export default {
           // 会话存储没有任何数据
           sessionStorage.articleDetails = JSON.stringify([
             {
-              articleId: props.articleId,
+              articleId,
               articleContent: data.articleContent,
             },
           ]);
         }
       });
-    }
-
-    // 获取文章评论
-    if (sessionStorage.articleDetails) {
-      // 从会话存储中获取文章数据
-      const article = JSON.parse(sessionStorage.articleDetails);
-
-      // 查找是否有这篇文章且有这篇文章的评论
-      const index = article.findIndex(
-        (item) => item.articleId === props.articleId && item.commentList
-      );
-
-      if (index !== -1) {
-        // 有，直接获取
-        state.commentList = article[index].commentList;
-      } else {
-        getServerComment();
-      }
-    } else {
-      getServerComment();
-    }
+    };
 
     // 从服务器拉取文章评论列表并存入会话存储中。
-    function getServerComment() {
-      getArticleComment(props.articleId).then((data) => {
+    const getServerComment = (articleId = state.articleId) => {
+      getArticleComment(articleId).then((data) => {
         if (!data.commentList) {
           // 没有评论
           data.commentList = -1;
@@ -172,7 +137,7 @@ export default {
 
           // 查找是否有这篇文章的数据
           const index = details.findIndex(
-            (item) => item.articleId === props.articleId
+            (item) => item.articleId === articleId
           );
 
           if (index !== -1) {
@@ -181,7 +146,7 @@ export default {
           } else {
             // 没有，添加一个对象包含文章id和文章评论字段
             details.push({
-              articleId: props.articleId,
+              articleId,
               commentList: data.commentList,
             });
           }
@@ -190,16 +155,16 @@ export default {
         } else {
           sessionStorage.articleDetails = JSON.stringify([
             {
-              articleId: props.articleId,
+              articleId,
               commentList: data.commentList,
             },
           ]);
         }
       });
-    }
+    };
 
     // 发表评论
-    function sendComment() {
+    const sendComment = () => {
       if (state.commentContent === "") {
         ElMessage({
           message: "请先输入评论内容",
@@ -222,49 +187,92 @@ export default {
           data.replyId = state.replyId;
         }
 
-        addComment(data).then(() => {
-          clearComment();
+        addComment(data)
+          .then(() => {
+            clearComment();
 
-          state.loading = false;
+            state.loading = false;
 
-          ElMessage({
-            message: "发表成功，审核中...",
-            type: "success",
-            duration: 2 * 1000,
+            ElMessage({
+              message: "发表成功，审核中...",
+              type: "success",
+              duration: 2 * 1000,
+            });
+          })
+          .catch(() => {
+            state.loading = false;
           });
-        }).catch(() => {
-          state.loading = false;
-        });
       }
-    }
+    };
 
     // 清空评论相关参数
-    function clearComment() {
+    const clearComment = () => {
       state.commentContent = "";
       state.parentId = null;
       state.replyId = null;
-    }
+    };
 
     // 回复主评论
-    function replyComment(parentId) {
+    const replyComment = (parentId) => {
       state.parentId = parentId;
 
       document.getElementById("comment").focus();
-    }
+    };
 
     // 回复子评论
-    function replyChildComment(parentId, replyId) {
+    const replyChildComment = (parentId, replyId) => {
       state.parentId = parentId;
       state.replyId = replyId;
 
       document.getElementById("comment").focus();
+    };
+
+    // 获取文章内容
+    if (sessionStorage.articleDetails) {
+      // 取出会话存储中保存的文章相关数据
+      const article = JSON.parse(sessionStorage.articleDetails);
+
+      // 查找是否有这篇文章且有这篇文章的内容
+      const index = article.findIndex(
+        (item) => item.articleId === state.articleId && item.articleContent
+      );
+
+      if (index !== -1) {
+        // 有，直接赋值
+        state.articleContent = article[index].articleContent;
+      } else {
+        // 没有，从服务器拉取
+        getArticleContent();
+      }
+    } else {
+      getArticleContent();
+    }
+
+    // 获取文章评论
+    if (sessionStorage.articleDetails) {
+      // 从会话存储中获取文章数据
+      const article = JSON.parse(sessionStorage.articleDetails);
+
+      // 查找是否有这篇文章且有这篇文章的评论
+      const index = article.findIndex(
+        (item) => item.articleId === state.articleId && item.commentList
+      );
+
+      if (index !== -1) {
+        // 有，直接获取
+        state.commentList = article[index].commentList;
+      } else {
+        getServerComment();
+      }
+    } else {
+      getServerComment();
     }
 
     return {
       ...toRefs(state),
       sendComment,
       replyComment,
-      replyChildComment
+      replyChildComment,
     };
   },
 };
