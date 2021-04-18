@@ -410,19 +410,19 @@ export default {
   min-height: calc(100vh - 340px);
   font-size: 18px;
 
-  ::v-deep p {
+  :deep p {
     text-indent: 2em;
     text-align: left;
     line-height: 2em;
   }
 
-  ::v-deep img {
+  :deep img {
     display: block;
     margin: 10px auto;
     max-width: 100%;
   }
 
-  ::v-deep pre {
+  :deep pre {
     padding: 0 10px;
     text-align: left;
     line-height: 2em;
@@ -430,11 +430,11 @@ export default {
     overflow-x: auto;
   }
 
-  ::v-deep blockquote {
+  :deep blockquote {
     text-align: center;
   }
 
-  ::v-deep h1,
+  :deep h1,
   h2,
   h3,
   h4,
