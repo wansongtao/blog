@@ -2,8 +2,16 @@
   <div class="container">
     <h6 class="title">我的分享</h6>
     <div class="content">
-      <h4>{{ articleTitle }}</h4>
+      <h4>{{ title }}</h4>
       <article v-html="articleContent" class="article" />
+      <div class="pre-next">
+        <p @click="preArticle">
+          上一篇：<span>{{ preTitle }}</span>
+        </p>
+        <p @click="nextArticle">
+          下一篇：<span>{{ nextTitle }}</span>
+        </p>
+      </div>
       <h6 class="title">文章评论</h6>
       <div class="comment-box">
         <textarea
@@ -53,7 +61,8 @@
 </template>
 
 <script>
-import { reactive, toRefs } from "vue";
+import { reactive, toRefs, watch } from "vue";
+import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import {
   getArticleDetail,
@@ -77,10 +86,15 @@ export default {
       articleContent: "",
       commentList: [],
       articleId: Number(props.articleId),
+      title: props.articleTitle,
       commentContent: "",
       parentId: null,
       replyId: null,
       loading: false,
+      preArticleId: "",
+      nextArticleId: "",
+      preTitle: "",
+      nextTitle: "",
     });
 
     // 从服务器获取文章内容并存入会话存储
@@ -268,11 +282,55 @@ export default {
       getServerComment();
     }
 
+    // 侦听文章id的变化，获取上一篇和下一篇文章
+    watch(
+      () => state.articleId,
+      (newval) => {
+        try {
+          const list = JSON.parse(sessionStorage.newArticleList);
+
+          const index = list.findIndex((item) => item.articleId === newval);
+
+          state.preArticleId = index
+            ? list[index - 1].articleId
+            : list[list.length - 1].articleId;
+
+          state.nextArticleId =
+            index === list.length - 1
+              ? list[0].articleId
+              : list[index + 1].articleId;
+
+          state.preTitle = index
+            ? list[index - 1].articleTitle
+            : list[list.length - 1].articleTitle;
+
+          state.nextTitle =
+            index === list.length - 1
+              ? list[0].articleTitle
+              : list[index + 1].articleTitle;
+        } catch (ex) {
+          console.error(ex);
+        }
+      },
+      { immediate: true }
+    );
+
+    const router = useRouter();
+    const preArticle = () => {
+      router.push(`/blog/details/${state.preArticleId}/${state.preTitle}`);
+    };
+
+    const nextArticle = () => {
+      router.push(`/blog/details/${state.nextArticleId}/${state.nextTitle}`);
+    };
+
     return {
       ...toRefs(state),
       sendComment,
       replyComment,
       replyChildComment,
+      preArticle,
+      nextArticle,
     };
   },
 };
@@ -391,6 +449,21 @@ export default {
   line-height: 40px;
   border-bottom: 1px solid #eee;
   text-align: left;
+}
+
+.pre-next {
+  padding: 10px;
+  text-align: left;
+
+  p {
+    font-size: 16px;
+    line-height: 30px;
+    cursor: pointer;
+
+    span {
+      color: #6bc30d;
+    }
+  }
 }
 
 @keyframes main-ani {
