@@ -430,6 +430,10 @@ export default {
     overflow-x: auto;
   }
 
+  ::blockquote {
+    text-align: center;
+  }
+
   ::v-deep h1,
   h2,
   h3,
