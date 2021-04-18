@@ -98,7 +98,7 @@ export default {
     });
 
     // 从服务器获取文章内容并存入会话存储
-    const getArticleContent = (articleId = props.articleId) => {
+    const getArticleContent = (articleId = state.articleId) => {
       getArticleDetail(articleId).then((data) => {
         state.articleContent = data.articleContent;
 
@@ -350,66 +350,6 @@ export default {
     color: #808080;
   }
 
-  .content {
-    max-height: calc(1286px - 41px);
-    overflow-y: auto;
-
-    &::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-
-    &::-webkit-scrollbar-track {
-      border-radius: 3px;
-      background: rgba(128, 128, 128, 0.2);
-      box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.08);
-    }
-
-    /* 滚动条滑块 */
-    &::-webkit-scrollbar-thumb {
-      border-radius: 3px;
-      background: #5c5b5a;
-      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
-    }
-  }
-
-  .article {
-    padding: 10px;
-    min-height: calc(100vh - 340px);
-    font-size: 18px;
-    // color: #808080;
-
-    ::v-deep p {
-      text-indent: 2em;
-      text-align: left;
-      line-height: 2em;
-    }
-
-    ::v-deep img {
-      display: block;
-      margin: 10px auto;
-      max-width: 100%;
-    }
-
-    ::v-deep pre {
-      padding: 0 10px;
-      text-align: left;
-      line-height: 2em;
-      background: #eee;
-      overflow-x: auto;
-    }
-
-    ::v-deep h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
-      text-align: center;
-      line-height: 1.6em;
-    }
-  }
-
   .comment-box {
     display: flex;
     align-items: center;
@@ -439,6 +379,65 @@ export default {
       width: 8%;
       height: 200px;
     }
+  }
+}
+
+.content {
+  max-height: calc(1286px - 41px);
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    border-radius: 3px;
+    background: rgba(128, 128, 128, 0.2);
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.08);
+  }
+
+  /* 滚动条滑块 */
+  &::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background: #5c5b5a;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.article {
+  padding: 10px;
+  min-height: calc(100vh - 340px);
+  font-size: 18px;
+
+  ::v-deep p {
+    text-indent: 2em;
+    text-align: left;
+    line-height: 2em;
+  }
+
+  ::v-deep img {
+    display: block;
+    margin: 10px auto;
+    max-width: 100%;
+  }
+
+  ::v-deep pre {
+    padding: 0 10px;
+    text-align: left;
+    line-height: 2em;
+    background: #eee;
+    overflow-x: auto;
+  }
+
+  ::v-deep h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    text-align: center;
+    line-height: 1.6em;
   }
 }
 
