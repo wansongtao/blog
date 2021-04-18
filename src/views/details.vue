@@ -311,7 +311,7 @@ export default {
     padding: 10px;
     min-height: calc(100vh - 340px);
     font-size: 18px;
-    color: #808080;
+    // color: #808080;
 
     ::v-deep p {
       text-indent: 2em;
@@ -340,8 +340,6 @@ export default {
     h5,
     h6 {
       text-align: center;
-      font-size: 20px;
-      color: #808080;
       line-height: 1.6em;
     }
   }
