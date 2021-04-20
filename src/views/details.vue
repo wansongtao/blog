@@ -86,7 +86,7 @@ export default {
       articleContent: "",
       commentList: [],
       articleId: Number(props.articleId),
-      title: props.articleTitle,
+      title: decodeURI(props.articleTitle),
       commentContent: "",
       parentId: null,
       replyId: null,
@@ -317,11 +317,11 @@ export default {
 
     const router = useRouter();
     const preArticle = () => {
-      router.push(`/blog/details/${state.preArticleId}/${state.preTitle}`);
+      router.push(`/blog/details/${state.preArticleId}/${encodeURI(state.preTitle)}`);
     };
 
     const nextArticle = () => {
-      router.push(`/blog/details/${state.nextArticleId}/${state.nextTitle}`);
+      router.push(`/blog/details/${state.nextArticleId}/${encodeURI(state.nextTitle)}`);
     };
 
     return {
