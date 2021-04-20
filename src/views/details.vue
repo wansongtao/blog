@@ -289,7 +289,12 @@ export default {
         try {
           const list = JSON.parse(sessionStorage.newArticleList);
 
-          const index = list.findIndex((item) => item.articleId === newval);
+          // 如果是从首页的热门文章模块跳转过来的，index为-1
+          let index = list.findIndex((item) => item.articleId === newval);
+
+          if (index === -1) {
+            index = 0;
+          }
 
           state.preArticleId = index
             ? list[index - 1].articleId
