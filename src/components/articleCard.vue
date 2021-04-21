@@ -1,13 +1,20 @@
 <template>
-  <div class="list-item" @click="articleDetails(article.articleId, article.articleTitle)">
+  <div
+    class="list-item"
+    @click="articleDetails(article.articleId, article.articleTitle)"
+  >
     <div class="list-img">
-      <img src="@/assets/images/new1.jpg" alt="封面"/>
+      <img src="@/assets/images/new1.jpg" alt="封面" />
     </div>
     <div class="title">
-      <div class="main-title">
-        {{ article.articleTitle || "" }}
+      <el-tooltip :content="article.articleTitle" placement="top">
+        <div class="main-title">
+          {{ article.articleTitle || "" }}
+        </div>
+      </el-tooltip>
+      <div class="hot">
+        <i class="iconfont iconhot2" />{{ article.hot || 0 }}
       </div>
-      <div class="hot"><i class="iconfont iconhot2" />{{ article.hot || 0 }}</div>
     </div>
     <p class="author">{{ article.author || "" }}</p>
     <p class="date">{{ chinaDate || "" }}</p>
@@ -17,7 +24,7 @@
 
 <script>
 import { defineComponent, computed, toRefs } from "vue";
-import { useRouter } from 'vue-router';
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   props: {
@@ -31,8 +38,8 @@ export default defineComponent({
 
     // 使用计算属性处理日期
     const chinaDate = computed(() => {
-      const dateArr = new Date(addTime.value).toLocaleDateString().split('/');
-      
+      const dateArr = new Date(addTime.value).toLocaleDateString().split("/");
+
       return `${dateArr[0]}年${dateArr[1]}月${dateArr[2]}日`;
     });
 
