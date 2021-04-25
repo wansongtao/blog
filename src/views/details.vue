@@ -63,7 +63,7 @@
 <script>
 import { reactive, toRefs, watch } from "vue";
 import { useRouter } from "vue-router";
-import { ElMessage } from "element-plus";
+import messageQueue from '@/untils/messageQueue';
 import {
   getArticleDetail,
   getArticleComment,
@@ -180,11 +180,7 @@ export default {
     // 发表评论
     const sendComment = () => {
       if (state.commentContent === "") {
-        ElMessage({
-          message: "请先输入评论内容",
-          type: "warning",
-          duration: 2 * 1000,
-        });
+        messageQueue('请先输入评论内容', "warning");
       } else {
         state.loading = true;
 
@@ -207,11 +203,7 @@ export default {
 
             state.loading = false;
 
-            ElMessage({
-              message: "发表成功，审核中...",
-              type: "success",
-              duration: 2 * 1000,
-            });
+            messageQueue('发表成功，审核中...');
           })
           .catch(() => {
             state.loading = false;

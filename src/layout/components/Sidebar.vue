@@ -78,8 +78,8 @@
 <script>
 import { defineComponent, ref, reactive, toRefs, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { ElMessage } from "element-plus";
 import { getSearchArticle, getHotArticle } from "@/api/article.js";
+import messageQueue from "@/untils/messageQueue.js";
 
 export default defineComponent({
   setup() {
@@ -149,11 +149,7 @@ export default defineComponent({
     const searchHandler = () => {
       if (state.keyword !== "") {
         if (state.loading) {
-          ElMessage({
-            message: "搜索中...",
-            type: "warning",
-            duration: 1 * 1500,
-          });
+          messageQueue("搜索中...", "warning", 2500);
           return;
         }
 
@@ -174,11 +170,7 @@ export default defineComponent({
             state.loading = false;
           });
       } else {
-        ElMessage({
-          message: "请输入您要搜索的内容",
-          type: "warning",
-          duration: 1 * 1500,
-        });
+        messageQueue("请输入您要搜索的内容", "warning", 1500);
         initSearchList();
       }
     };

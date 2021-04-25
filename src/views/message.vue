@@ -39,7 +39,7 @@
 
 <script>
 import { reactive, toRefs } from "vue";
-import { ElMessage } from "element-plus";
+import messageQueue from '@/untils/messageQueue';
 import { getMessageList, addMessage } from "@/api/message.js";
 
 export default {
@@ -77,11 +77,7 @@ export default {
     // 提交留言
     function sendMessage() {
       if (!state.msgContent) {
-        ElMessage({
-          message: "请先输入内容",
-          type: "warning",
-          duration: 2 * 1000,
-        });
+        messageQueue('请先输入内容', "warning");
       } else {
         state.loading = true;
 
@@ -90,11 +86,7 @@ export default {
             state.loading = false;
             state.msgContent = "";
 
-            ElMessage({
-              message: "提交成功，审核中...",
-              type: "success",
-              duration: 2 * 1000,
-            });
+            messageQueue('提交成功，审核中...');
           })
           .catch(() => {
             state.loading = false;

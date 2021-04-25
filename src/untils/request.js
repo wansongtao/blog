@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ElMessage } from 'element-plus';
+import messageQueue from './messageQueue';
 
 const service = axios.create({
     baseURL: process.env.VUE_APP_BASE_API,
@@ -18,23 +18,13 @@ service.interceptors.response.use((response) => {
             return data;
         }
         else {
-            ElMessage({
-                message: message || '操作失败',
-                type: 'error',
-                duration: 2 * 1000
-            });
+            messageQueue(message || '操作失败', "error", 2000);
             return Promise.reject(message);
         }
     },
     (error) => {
         console.error('err' + error);
-
-        ElMessage({
-            message: error.message,
-            type: 'error',
-            duration: 2 * 1000
-        });
-
+        messageQueue(error.message || '操作失败', "error", 2000);
         return Promise.reject(error);
     });
 
