@@ -30,6 +30,13 @@ const routes = [
         hidden: false
       },
       {
+        path: 'func',
+        name: 'Func',
+        component: () => import('@/views/function.vue'),
+        meta: { title: '功能' },
+        hidden: false
+      },
+      {
         path: 'about',
         name: 'About',
         component: () => import('@/views/about.vue'),
