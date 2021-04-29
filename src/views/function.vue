@@ -341,4 +341,15 @@ function backDecimalType(type) {
   padding: 0 10px;
   height: 200px;
 }
+
+@keyframes main-ani {
+  from {
+    opacity: 0;
+    transform: translateX(-14vw);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
 </style>
