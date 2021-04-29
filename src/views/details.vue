@@ -62,8 +62,8 @@
 
 <script>
 import { reactive, toRefs, watch } from "vue";
-import { useRouter } from "vue-router";
-import messageQueue from '@/untils/messageQueue';
+import { useRouter, useRoute } from "vue-router";
+import messageQueue from "@/untils/messageQueue";
 import {
   getArticleDetail,
   getArticleComment,
@@ -71,22 +71,12 @@ import {
 } from "@/api/article.js";
 
 export default {
-  props: {
-    articleId: {
-      type: String,
-      required: true,
-    },
-    articleTitle: {
-      type: String,
-      required: true,
-    },
-  },
-  setup(props) {
+  setup() {
     const state = reactive({
       articleContent: "",
       commentList: [],
-      articleId: Number(props.articleId),
-      title: decodeURI(props.articleTitle),
+      articleId: "",
+      title: "",
       commentContent: "",
       parentId: null,
       replyId: null,
@@ -96,6 +86,10 @@ export default {
       preTitle: "",
       nextTitle: "",
     });
+
+    const route = useRoute();
+    state.articleId = Number(route.query.articleId);
+    state.title = decodeURI(route.query.articleTitle);
 
     // 从服务器获取文章内容并存入会话存储
     const getArticleContent = (articleId = state.articleId) => {
@@ -180,7 +174,7 @@ export default {
     // 发表评论
     const sendComment = () => {
       if (state.commentContent === "") {
-        messageQueue('请先输入评论内容', "warning");
+        messageQueue("请先输入评论内容", "warning");
       } else {
         state.loading = true;
 
@@ -203,7 +197,7 @@ export default {
 
             state.loading = false;
 
-            messageQueue('发表成功，审核中...');
+            messageQueue("发表成功，审核中...");
           })
           .catch(() => {
             state.loading = false;
@@ -314,11 +308,33 @@ export default {
 
     const router = useRouter();
     const preArticle = () => {
-      router.push(`/blog/details/${state.preArticleId}/${encodeURI(state.preTitle)}`);
+      // 先跳转到文章页，再跳转到文章详情页。（因为vue不允许同页面跳转）
+      router.push('/blog/article');
+      
+      setTimeout(() => {
+        router.push({
+          name: "Details",
+          query: {
+            articleId: state.preArticleId,
+            articleTitle: encodeURI(state.preTitle),
+          },
+        });
+      }, 0);
     };
 
     const nextArticle = () => {
-      router.push(`/blog/details/${state.nextArticleId}/${encodeURI(state.nextTitle)}`);
+      // 先跳转到文章页，再跳转到文章详情页。（因为vue不允许同页面跳转）
+      router.push('/blog/article');
+
+      setTimeout(() => {
+        router.push({
+          name: "Details",
+          query: {
+            articleId: state.nextArticleId,
+            articleTitle: encodeURI(state.nextTitle),
+          },
+        });
+      }, 0);
     };
 
     return {

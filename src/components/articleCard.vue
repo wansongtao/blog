@@ -48,7 +48,13 @@ export default defineComponent({
      * @description 跳转到文章详情页
      */
     function articleDetails(articleId, articleTitle) {
-      router.push(`/blog/details/${articleId}/${encodeURI(articleTitle)}`);
+      router.push({
+        name: 'Details',
+        query: {
+          articleId,
+          articleTitle: encodeURI(articleTitle)
+        }
+      });
     }
 
     return {

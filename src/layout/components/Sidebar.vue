@@ -177,7 +177,18 @@ export default defineComponent({
 
     // 跳转到文章详情页
     function jumpPage(articleId, articleTitle) {
-      router.push(`/blog/details/${articleId}/${encodeURI(articleTitle)}`);
+      // 先跳转到文章页，再跳转到文章详情页。（因为vue不允许同页面跳转）
+      router.push('/blog/article');
+      
+      setTimeout(() => {
+        router.push({
+          name: "Details",
+          query: {
+            articleId,
+            articleTitle: encodeURI(articleTitle),
+          },
+        });
+      }, 0);
     }
 
     return {
