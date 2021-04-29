@@ -97,7 +97,14 @@ export default defineComponent({
     // 初始化搜索列表
     function initSearchList() {
       if (!sessionStorage.hotArticleList) {
-        router.push("/");
+        getHotArticle().then((data) => {
+          state.searchList = data.articles.slice(0, 6).map((item) => {
+            return {
+              articleId: item.articleId,
+              articleTitle: item.articleTitle,
+            };
+          });
+        });
         return;
       }
 
@@ -178,8 +185,8 @@ export default defineComponent({
     // 跳转到文章详情页
     function jumpPage(articleId, articleTitle) {
       // 先跳转到文章页，再跳转到文章详情页。（因为vue不允许同页面跳转）
-      router.push('/blog/article');
-      
+      router.push("/blog/article");
+
       setTimeout(() => {
         router.push({
           name: "Details",
