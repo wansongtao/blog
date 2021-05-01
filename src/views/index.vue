@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="focus">
-      <div class="animate-content">
+      <div class="animate-content" v-if="name">
         <div class="name">{{ name }}</div>
         <div class="des">{{ lifeMotto }}</div>
         <el-button type="primary" @click="jumpBlog">Enter Blog</el-button>
