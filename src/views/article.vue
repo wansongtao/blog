@@ -78,6 +78,7 @@ export default defineComponent({
             if (data.articles.length < state.pageSize) {
               // 根据返回的数据长度，判断是否还有更多文章
               state.isMore = false;
+              sessionStorage.loadAll = JSON.stringify(true);
             }
           } else {
             // 没有返回文章，则设置为false
@@ -126,6 +127,7 @@ export default defineComponent({
 
             state.newList.push(...addArticle);
 
+            // 当数据长度小于每页条数时，则没有更多数据了，不再加载。
             if (addArticle.length < state.pageSize) {
               state.isMore = false;
             }
