@@ -96,9 +96,9 @@ export default {
       getArticleDetail(articleId).then((data) => {
         state.articleContent = data.articleContent;
 
-        if (sessionStorage.articleDetails) {
+        if (sessionStorage.newArticleList) {
           // 从会话存储中获取文章相关数据
-          const details = JSON.parse(sessionStorage.articleDetails);
+          const details = JSON.parse(sessionStorage.newArticleList);
 
           // 查找是否有这篇文章
           const index = details.findIndex(
@@ -108,23 +108,9 @@ export default {
           if (index !== -1) {
             // 有，添加文章内容字段
             details[index].articleContent = data.articleContent;
-          } else {
-            // 没有，添加一个对象包含文章id字段和文章内容字段
-            details.push({
-              articleId,
-              articleContent: data.articleContent,
-            });
           }
 
-          sessionStorage.articleDetails = JSON.stringify(details);
-        } else {
-          // 会话存储没有任何数据
-          sessionStorage.articleDetails = JSON.stringify([
-            {
-              articleId,
-              articleContent: data.articleContent,
-            },
-          ]);
+          sessionStorage.newArticleList = JSON.stringify(details);
         }
       });
     };
@@ -139,9 +125,9 @@ export default {
 
         state.commentList = data.commentList;
 
-        if (sessionStorage.articleDetails) {
+        if (sessionStorage.newArticleList) {
           // 从会话存储中获取文章数据
-          const details = JSON.parse(sessionStorage.articleDetails);
+          const details = JSON.parse(sessionStorage.newArticleList);
 
           // 查找是否有这篇文章的数据
           const index = details.findIndex(
@@ -151,22 +137,9 @@ export default {
           if (index !== -1) {
             // 有，添加文章评论字段
             details[index].commentList = data.commentList;
-          } else {
-            // 没有，添加一个对象包含文章id和文章评论字段
-            details.push({
-              articleId,
-              commentList: data.commentList,
-            });
           }
 
-          sessionStorage.articleDetails = JSON.stringify(details);
-        } else {
-          sessionStorage.articleDetails = JSON.stringify([
-            {
-              articleId,
-              commentList: data.commentList,
-            },
-          ]);
+          sessionStorage.newArticleList = JSON.stringify(details);
         }
       });
     };
@@ -227,10 +200,12 @@ export default {
       document.getElementById("comment").focus();
     };
 
+    const router = useRouter();
+
     // 获取文章内容
-    if (sessionStorage.articleDetails) {
+    if (sessionStorage.newArticleList) {
       // 取出会话存储中保存的文章相关数据
-      const article = JSON.parse(sessionStorage.articleDetails);
+      const article = JSON.parse(sessionStorage.newArticleList);
 
       // 查找是否有这篇文章且有这篇文章的内容
       const index = article.findIndex(
@@ -245,13 +220,13 @@ export default {
         getArticleContent();
       }
     } else {
-      getArticleContent();
+      router.push('/blog/article');
     }
 
     // 获取文章评论
-    if (sessionStorage.articleDetails) {
+    if (sessionStorage.newArticleList) {
       // 从会话存储中获取文章数据
-      const article = JSON.parse(sessionStorage.articleDetails);
+      const article = JSON.parse(sessionStorage.newArticleList);
 
       // 查找是否有这篇文章且有这篇文章的评论
       const index = article.findIndex(
@@ -265,7 +240,7 @@ export default {
         getServerComment();
       }
     } else {
-      getServerComment();
+      router.push('/blog/article');
     }
 
     // 侦听文章id的变化，获取上一篇和下一篇文章
@@ -306,7 +281,6 @@ export default {
       { immediate: true }
     );
 
-    const router = useRouter();
     const preArticle = () => {
       // 先跳转到文章页，再跳转到文章详情页。（因为vue不允许同页面跳转）
       router.push('/blog/article');
