@@ -64,28 +64,59 @@ export default defineComponent({
         categoryType: state.categoryType,
       })
         .then((data) => {
+          // 判断是否返回了文章
           if (data.articles) {
-            // 判断是否返回了文章
-
             if (isReplace) {
               state.newList = data.articles;
             } else {
               state.newList.push(...data.articles);
             }
-            
-            sessionStorage.newArticleList = JSON.stringify(state.newList);
+
+            if (sessionStorage.newArticleList) {
+              // 当切换分类时，服务器返回的数据可能和本地数据有重复，所以只将本地没有的数据存储起来。
+              const list = JSON.parse(sessionStorage.newArticleList);
+              const tempList = list;
+
+              data.articles.forEach((item) => {
+                const isSame = tempList.every((value) => {
+                  if (value.articleId !== item.articleId) {
+                    return true;
+                  }
+
+                  return false;
+                });
+
+                if (isSame) {
+                  list.push(item);
+                }
+              });
+
+              sessionStorage.newArticleList = JSON.stringify(list);
+            } else {
+              // 本地没有数据，则直接保存
+              sessionStorage.newArticleList = JSON.stringify(state.newList);
+            }
 
             if (data.articles.length < state.pageSize) {
               // 根据返回的数据长度，判断是否还有更多文章
               state.isMore = false;
-              sessionStorage.loadAll = JSON.stringify(true);
+
+              if (state.categoryType === "") {
+                // 当没有选择分类时，数据长度不够则代表已经请求了所有文章数据了
+                sessionStorage.loadAll = JSON.stringify(true);
+              }
             }
           } else {
             // 没有返回文章，则设置为false
             state.isMore = false;
 
-            if (isReplace) {
+            if (state.currentPage === 1) {
               state.newList = [];
+            }
+
+            if (state.categoryType === "") {
+              // 当没有选择分类时，数据长度不够则代表已经请求了所有文章数据了
+              sessionStorage.loadAll = JSON.stringify(true);
             }
           }
 
@@ -115,10 +146,20 @@ export default defineComponent({
           getArticle();
         } else {
           // 取出本地数据
-          const list = JSON.parse(sessionStorage.newArticleList);
+          let list = JSON.parse(sessionStorage.newArticleList);
+
+          if (state.categoryType != "") {
+            // 取出对应分类的数据
+            list = list.filter(
+              (item) => item.categoryType === state.categoryType
+            );
+          }
 
           // 判断本地是否有对应页码的数据
-          if (list.length > (state.currentPage - 1) * state.pageSize) {
+          if (
+            sessionStorage.loadAll || 
+            list.length >= state.currentPage * state.pageSize
+          ) {
             // 取出对应页码的数据
             const addArticle = list.slice(
               state.pageSize * (state.currentPage - 1),
@@ -165,12 +206,41 @@ export default defineComponent({
 
     // 改变文章分类，搜索对应分类的文章
     const changeType = () => {
-      sessionStorage.removeItem("newArticleList");
       state.currentPage = 1;
       state.isMore = true;
 
-      // 请求数据并覆盖掉其他分类的数据
-      getArticle(true);
+      if (sessionStorage.loadAll && sessionStorage.newArticleList) {
+        // 如果本地存在所有文章数据，则直接从本地查找相关分类的文章
+        let list = JSON.parse(sessionStorage.newArticleList);
+
+        if (state.categoryType !== "") {
+          // 取出对应分类的数据
+          list = list.filter(
+            (item) => item.categoryType === state.categoryType
+          );
+        }
+
+        // 判断本地是否有对应页码的数据
+        if (list.length > (state.currentPage - 1) * state.pageSize) {
+          // 取出对应页码的数据
+          const addArticle = list.slice(
+            state.pageSize * (state.currentPage - 1),
+            state.pageSize * state.currentPage
+          );
+
+          state.newList = addArticle;
+
+          // 当数据长度小于每页条数时，则没有更多数据了，不再加载。
+          if (addArticle.length < state.pageSize) {
+            state.isMore = false;
+          }
+        } else {
+          // 本地数据不足，从服务器拉取
+          getArticle();
+        }
+      } else {
+        getArticle(true);
+      }
     };
 
     return {
