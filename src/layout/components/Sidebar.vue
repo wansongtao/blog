@@ -162,20 +162,46 @@ export default defineComponent({
 
         state.loading = true;
 
-        getSearchArticle(state.keyword)
-          .then((data) => {
-            state.searchList = data.articles.slice(0, 6).map((item) => {
-              return {
-                articleId: item.articleId,
-                articleTitle: item.articleTitle,
-              };
-            });
-            state.loading = false;
-          })
-          .catch(() => {
-            state.searchList = [];
-            state.loading = false;
+        if (sessionStorage.loadAll && sessionStorage.newArticleList) {
+          // 已经从服务器拉取了所有文章，则从本地搜索
+          const allArticle = JSON.parse(sessionStorage.newArticleList);
+
+          const seaList = allArticle.filter((item) => {
+            if (
+              item.articleTitle.indexOf(state.keyword) > -1 ||
+              item.author.indexOf(state.keyword) > -1 ||
+              item.addTime.indexOf(state.keyword) > -1
+            ) {
+              return true;
+            }
+
+            return false;
           });
+
+          if (seaList.length > 0) {
+            state.searchList = seaList.slice(0, 6);
+          } else {
+            state.searchList = [];
+          }
+
+          state.loading = false;
+        } else {
+          // 从服务器搜索对应文章
+          getSearchArticle(state.keyword)
+            .then((data) => {
+              state.searchList = data.articles.slice(0, 6).map((item) => {
+                return {
+                  articleId: item.articleId,
+                  articleTitle: item.articleTitle,
+                };
+              });
+              state.loading = false;
+            })
+            .catch(() => {
+              state.searchList = [];
+              state.loading = false;
+            });
+        }
       } else {
         messageQueue("请输入您要搜索的内容", "warning", 1500);
         initSearchList();
