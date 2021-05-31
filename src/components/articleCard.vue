@@ -30,8 +30,8 @@ export default defineComponent({
   props: {
     article: {
       type: Object,
-      required: true,
-    },
+      required: true
+    }
   },
   setup(props) {
     const { addTime } = toRefs(props.article);

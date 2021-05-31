@@ -4,7 +4,7 @@
     <div class="content">
       <h4>{{ title }}</h4>
       <article v-html="articleContent" class="article" />
-      <div class="pre-next">
+      <div class="pre-next" v-if="preTitle">
         <p @click="preArticle">
           上一篇：<span>{{ preTitle }}</span>
         </p>
@@ -111,6 +111,16 @@ export default {
           }
 
           sessionStorage.newArticleList = JSON.stringify(details);
+        } else {
+          const list = [
+            {
+              articleId: state.articleId,
+              articleTitle: state.title,
+              articleContent: data.articleContent,
+            },
+          ];
+
+          sessionStorage.newArticleList = JSON.stringify(list);
         }
       });
     };
@@ -220,7 +230,8 @@ export default {
         getArticleContent();
       }
     } else {
-      router.push('/blog/article');
+      // 没有，从服务器拉取
+      getArticleContent();
     }
 
     // 获取文章评论
@@ -239,8 +250,6 @@ export default {
       } else {
         getServerComment();
       }
-    } else {
-      router.push('/blog/article');
     }
 
     // 侦听文章id的变化，获取上一篇和下一篇文章
@@ -283,8 +292,8 @@ export default {
 
     const preArticle = () => {
       // 先跳转到文章页，再跳转到文章详情页。（因为vue不允许同页面跳转）
-      router.push('/blog/article');
-      
+      router.push("/blog/article");
+
       setTimeout(() => {
         router.push({
           name: "Details",
@@ -298,7 +307,7 @@ export default {
 
     const nextArticle = () => {
       // 先跳转到文章页，再跳转到文章详情页。（因为vue不允许同页面跳转）
-      router.push('/blog/article');
+      router.push("/blog/article");
 
       setTimeout(() => {
         router.push({

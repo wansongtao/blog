@@ -48,7 +48,7 @@ export default defineComponent({
       pageSize: 12, // 每页大小
       categories: [], // 分类数据
       categoryType: "", // 当前选择的分类
-      isReqData: false // 是否请求了服务器的文章列表数据
+      isReqData: false, // 是否请求了服务器的文章列表数据
     });
 
     /**
@@ -75,19 +75,14 @@ export default defineComponent({
             if (sessionStorage.newArticleList) {
               // 当切换分类时，服务器返回的数据可能和本地数据有重复，所以只将本地没有的数据存储起来。
               const list = JSON.parse(sessionStorage.newArticleList);
-              const tempList = list;
 
               data.articles.forEach((item) => {
-                const isSame = tempList.every((value) => {
-                  if (value.articleId !== item.articleId) {
-                    return true;
-                  }
+                const idx = list.findIndex((val) => val.articleId === item.articleId);
 
-                  return false;
-                });
-
-                if (isSame) {
+                if (idx === -1) {
                   list.push(item);
+                } else {
+                  list[idx] = Object.assign(item, list[idx]);
                 }
               });
 
@@ -157,7 +152,7 @@ export default defineComponent({
 
           // 判断本地是否有对应页码的数据
           if (
-            sessionStorage.loadAll || 
+            sessionStorage.loadAll ||
             list.length >= state.currentPage * state.pageSize
           ) {
             // 取出对应页码的数据
@@ -182,10 +177,14 @@ export default defineComponent({
 
     if (sessionStorage.newArticleList) {
       // 取出本地数据
-      state.newList = JSON.parse(sessionStorage.newArticleList).slice(
-        0,
-        state.pageSize
-      );
+      const tempList = JSON.parse(sessionStorage.newArticleList);
+
+      // 用户是直接通过链接进入的文章详情页，没有进入过文章页，所以重新请求数据
+      if (!tempList[0].categoryType) {
+        getArticle();
+      } else {
+        state.newList = tempList.slice(0, state.pageSize);
+      }
     } else {
       // 没有本地数据
       getArticle();
